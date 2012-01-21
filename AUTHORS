@@ -1,0 +1,23 @@
+Authors of radio reddit for Android
+===================================
+
+Android Open Source Project
+---------------------------
+This project was based off of the ActionBar Compatibility example provided by
+AOSP. It is used to provide a consistent Android 4.0 experience accross all
+versions of Android.
+
+Christopher Blay <chris.b.blay@gmail.com>
+-----------------------------------------
+One of the two members who worked on the initial release. Currently project
+manager and active in development.
+
+Daniel Morwood <danmorwood@gmail.com>
+-------------------------------------
+One of the two members who worked on the initial release. Not currently active
+in development.
+
+You!?
+-----
+If you would like to make radio reddit for Android better, please contribute
+to the project and your name can go here!

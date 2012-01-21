@@ -1,0 +1,38 @@
+<!--
+  This file is part of radio reddit for Android.
+ 
+  radio reddit for Android is free software: you can redistribute it and/or
+  modify it under the terms of the GNU General Public License as published
+  by the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  radio reddit for Android is distributed in the hope that it will be
+  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with radio reddit for Android.
+  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/menu_tune"
+        android:title="@string/menu_tune"
+        android:icon="@drawable/ic_action_tune"
+        android:orderInCategory="0"
+        android:showAsAction="always" />
+
+    <!-- <item android:id="@+id/menu_search"
+        android:title="@string/menu_search"
+        android:icon="@drawable/ic_action_search"
+        android:orderInCategory="0"
+        android:showAsAction="always" /> -->
+
+    <item android:id="@+id/menu_logout"
+        android:title="@string/menu_logout"
+        android:orderInCategory="0"
+        android:showAsAction="never" />
+
+</menu>

@@ -1,0 +1,36 @@
+radio reddit for Android
+========================
+
+About
+-----
+A simple radio reddit client for Android based in part on the ActionBar
+Compatibility example of the Android Open Source Project.
+
+Licensing
+---------
+Those files which are from the ActionBar Compatibility example are licensed
+with Apache 2.0 and have comments indicating as such. Those files which have
+been created specifically for radio reddit for Android are licensed with
+GNU GPL version 3 or later at your preference and have comments indicating as
+such.
+
+If I knew it was OK, I'd just go ahead and relicense the AOSP files with GNU
+GPL so that all files in this project use the same license.
+
+Most image assets are from the Tango Desktop Project and are in the
+public domain.
+
+The up/down vote arrows are owned by reddit.com and the radio
+reddit images are owned by radioreddit.com.
+
+Development Notes
+-----------------
+This Android project targets version 15 of the Android SDK.
+
+GSON is used for some parts of the API. It would be cool if we utilize it as
+much as possible.
+
+Each API call should have its own class that extends AsyncTask.
+
+The API isn't all the way fleshed out but I feel we have a pretty good
+foundation and UI to build something really nice.
