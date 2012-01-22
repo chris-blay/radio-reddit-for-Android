@@ -23,11 +23,14 @@ import java.io.IOException;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public class MusicService extends Service {
@@ -36,10 +39,43 @@ public class MusicService extends Service {
     private final IBinder mBinder = new MusicBinder();
     private MediaPlayer mMediaPlayer = null;
     private MainActivity mMainActivity = null;
+    private String mStreamUrl = null;
+    private boolean mResumeAfterCall = false;
+    
+    private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
+        @Override
+        public void onCallStateChanged(int state, String incomingNumber) {
+            switch (state) {
+            case TelephonyManager.CALL_STATE_RINGING:
+                // Stop the stream if playing and the ringer isn't in silent/vibrate
+                if (isPlaying() && ((AudioManager) getSystemService(Context.AUDIO_SERVICE)).getStreamVolume(AudioManager.STREAM_RING) > 0) {
+                    stop();
+                    mResumeAfterCall = true;
+                }
+                break;
+            case TelephonyManager.CALL_STATE_OFFHOOK:
+                // Stop stream if playing
+                if (isPlaying()) {
+                    stop();
+                    mResumeAfterCall = true;
+                }
+                break;
+            case TelephonyManager.CALL_STATE_IDLE:
+                // Resume playing stream if it was playing before
+                if (mResumeAfterCall) {
+                    play();
+                    mResumeAfterCall = false;
+                }
+                break;
+            }
+        }
+    };
     
     @Override
     public void onCreate() {
-        // pass
+        // Register our state listener with the system
+        TelephonyManager telemgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        telemgr.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
     }
     
     @Override
@@ -49,8 +85,15 @@ public class MusicService extends Service {
     
     @Override
     public void onDestroy() {
+        // Remove any reference to the main activity
         detatch();
+        
+        // Remove any reference to the media player
         stop();
+        
+        // Unregister our state listener from the system 
+        TelephonyManager telemgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        telemgr.listen(mPhoneStateListener, PhoneStateListener.LISTEN_NONE);
     }
     
     @Override
@@ -71,6 +114,13 @@ public class MusicService extends Service {
         mMainActivity = null;
     }
     
+    // Only called by the phone state listener if we need to resume play
+    private void play() {
+        if (mStreamUrl != null) {
+            play(mStreamUrl);
+        }
+    }
+    
     // Called by the main activity when we need to play a new stream. Can be
     // called when stopped or already playing
     public void play(String streamUrl) {
@@ -84,6 +134,7 @@ public class MusicService extends Service {
             mMediaPlayer.setDataSource(streamUrl);
             mMediaPlayer.prepareAsync();
             showNotification();
+            mStreamUrl = streamUrl;
         } catch (IOException e) {
             Log.e("music service - radio reddit", "IOException while trying to start media player", e);
             // try to display error message via attached activity
@@ -136,7 +187,7 @@ public class MusicService extends Service {
         final CharSequence text = getText(NOTIFICATION);
         Notification notification = new Notification(R.drawable.ic_home, text, System.currentTimeMillis());
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
-        notification.setLatestEventInfo(this, text, text, contentIntent);
+        notification.setLatestEventInfo(this, text, "", contentIntent);
         startForeground(NOTIFICATION, notification);
     }
     
