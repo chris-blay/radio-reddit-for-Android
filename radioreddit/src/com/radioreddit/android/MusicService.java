@@ -185,7 +185,7 @@ public class MusicService extends Service {
      */
     private void showNotification() {
         final CharSequence text = getText(NOTIFICATION);
-        Notification notification = new Notification(R.drawable.ic_home, text, System.currentTimeMillis());
+        Notification notification = new Notification(R.drawable.ic_stat_notify_playing, text, System.currentTimeMillis());
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
         notification.setLatestEventInfo(this, text, "", contentIntent);
         startForeground(NOTIFICATION, notification);
