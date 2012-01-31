@@ -51,8 +51,8 @@
 
     <string name="info_text"><![CDATA[version 0.1<br><br>donate to radio reddit <a href="http://radioreddit.com/?q=sponsor">here</a>!<br><br>created by <a href="mailto:chris.b.blay@gmail.com">christopher blay</a> and <a href="mailto:danmorwood@gmail.com">daniel morwood</a>. thanks goes to all <a href="https://github.com/chris-blay/radio-reddit-for-Android/blob/master/AUTHORS">authors</a><br><br>portions of this app are licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0">apache 2.0</a>, specifically <a href="http://code.google.com/p/google-gson/">gson</a> and the <a href="http://developer.android.com/resources/samples/ActionBarCompat/index.html">action bar compatibility</a>. nearly everything else is licensed under the <a href="http://www.gnu.org/licenses/gpl.txt">GNU GPL v3</a><br><br>special thanks to the <a href="http://tango.freedesktop.org/">tango project</a>, <a href="http://www.reddit.com/">reddit</a>, and <a href="http://radioreddit.com/">radio reddit</a> for their icons]]></string>
 
-    <string name="no_internet">no internet connection :(</string>
-    <string name="not_submitted">this song has not submitted to reddit yet</string>
+    <string name="no_internet">can\'t connect to radio reddit :(</string>
+    <string name="not_submitted">this song hasn\'t been submitted to reddit yet</string>
 
     <string name="now_tuned_to">now tuned to</string>
     <string name="not_logged_in">not logged in</string>
