@@ -172,39 +172,6 @@
 
     </ScrollView>
 
-<!--
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dip"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/current_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="0:00" />
-
-        <TextView
-            android:id="@+id/total_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1:23" />
-
-    </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="5dip"
-        android:paddingRight="5dip" />
-
--->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/actionbar_compat_height"
