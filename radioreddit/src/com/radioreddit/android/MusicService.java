@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
@@ -40,33 +41,53 @@ public class MusicService extends Service {
     private MediaPlayer mMediaPlayer = null;
     private MainActivity mMainActivity = null;
     private String mStreamUrl = null;
-    private boolean mResumeAfterCall = false;
+    private boolean mCanPlay = true;
+    private boolean mResume = false;
     
     private final PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
         @Override
         public void onCallStateChanged(int state, String incomingNumber) {
             switch (state) {
             case TelephonyManager.CALL_STATE_RINGING:
+                mCanPlay = false;
                 // Stop the stream if playing and the ringer isn't in silent/vibrate
                 if (isPlaying() && ((AudioManager) getSystemService(Context.AUDIO_SERVICE)).getStreamVolume(AudioManager.STREAM_RING) > 0) {
                     stop();
-                    mResumeAfterCall = true;
+                    mResume = true;
                 }
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK:
+                mCanPlay = false;
                 // Stop stream if playing
                 if (isPlaying()) {
                     stop();
-                    mResumeAfterCall = true;
+                    mResume = true;
                 }
                 break;
             case TelephonyManager.CALL_STATE_IDLE:
-                // Resume playing stream if it was playing before
-                if (mResumeAfterCall) {
-                    play();
-                    mResumeAfterCall = false;
+                mCanPlay = true;
+                // Resume playing stream if it was playing before and we have Internet access now
+                if (mResume) {
+                    final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    if (connectivityManager.getActiveNetworkInfo() != null) {
+                        // We have an Internet connection so just start playing
+                        play();
+                        mResume = false;
+                    } else {
+                        // We're probably waiting for the data to come back so
+                        // let's wait for the data connection state change
+                        // listener to start playing instead
+                    }
                 }
                 break;
+            }
+        }
+        
+        @Override
+        public void onDataConnectionStateChanged(final int state) {
+            if (mResume && mCanPlay && state == TelephonyManager.DATA_CONNECTED) {
+                play();
+                mResume = false;
             }
         }
     };
@@ -74,8 +95,8 @@ public class MusicService extends Service {
     @Override
     public void onCreate() {
         // Register our state listener with the system
-        TelephonyManager telemgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        telemgr.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        final TelephonyManager telemgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        telemgr.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE | PhoneStateListener.LISTEN_DATA_CONNECTION_STATE);
     }
     
     @Override
@@ -92,7 +113,7 @@ public class MusicService extends Service {
         stop();
         
         // Unregister our state listener from the system 
-        TelephonyManager telemgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        final TelephonyManager telemgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         telemgr.listen(mPhoneStateListener, PhoneStateListener.LISTEN_NONE);
     }
     
