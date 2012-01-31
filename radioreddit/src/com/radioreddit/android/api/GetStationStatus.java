@@ -25,6 +25,7 @@ import java.io.Reader;
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.radioreddit.android.AllSongInfo;
 import com.radioreddit.android.MainActivity;
 import com.radioreddit.android.R;
@@ -49,7 +50,12 @@ public class GetStationStatus extends AsyncTask<String, Integer, StationStatus> 
         
         Reader reader = new InputStreamReader(source);
         Gson gson = new Gson();
-        return gson.fromJson(reader, StationStatus.class);
+        // Wrap in try/catch in case there is a parse error
+        try {
+            return gson.fromJson(reader, StationStatus.class);
+        } catch (JsonSyntaxException e) {
+            return null;
+        }
     }
     
     @Override
