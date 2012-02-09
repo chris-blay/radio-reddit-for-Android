@@ -456,10 +456,12 @@ public class MainActivity extends ActionBarActivity {
             editor.remove(PREF_COOKIE);
             editor.commit();
             // Clear up/down vote and star
-            mSongInfo.upvoted = false;
-            mSongInfo.downvoted = false;
-            mSongInfo.saved = false;
-            displayStatus();
+            if (mSongInfo != null) {
+                mSongInfo.upvoted = false;
+                mSongInfo.downvoted = false;
+                mSongInfo.saved = false;
+                displayStatus();
+            }
             // Inform user of change
             toast(R.string.now_logged_out);
         } else {
