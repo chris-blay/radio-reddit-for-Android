@@ -19,8 +19,7 @@
 package com.radioreddit.android.api;
 
 import com.radioreddit.android.AllSongInfo;
-import com.radioreddit.android.LoginActivity;
-import com.radioreddit.android.MainActivity;
+import com.radioreddit.android.MusicService;
 
 public class RedditApi {
     private static final String VOTE_UP = "1";
@@ -30,12 +29,12 @@ public class RedditApi {
     private static final String SAVE = "save";
     private static final String UNSAVE = "unsave";
     
-    public static void requestSongInfo(MainActivity ref, String cookie, String url) {
-        new GetStationStatus(ref, cookie).execute(url);
+    public static void requestLogin(LoginResultCallback callback, String username, String password) {
+        new PerformLogin(callback).execute(username, password);
     }
     
-    public static void requestLogin(LoginActivity ref, String username, String password) {
-        new PerformLogin(ref).execute(username, password);
+    public static void requestSongInfo(MusicService service, String cookie, String url) {
+        new GetStationStatus(service, cookie).execute(url);
     }
     
     public static AllSongInfo toggleUpvote(String modhash, String cookie, AllSongInfo info) {
@@ -81,3 +80,4 @@ public class RedditApi {
         return info;
     }
 }
+

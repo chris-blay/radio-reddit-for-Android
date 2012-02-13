@@ -35,18 +35,18 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int maskDrawable=0x7f010004;
     }
     public static final class color {
-        public static final int actionbar_background_color=0x7f040001;
-        public static final int actionbar_title_color=0x7f040000;
-        public static final int downvote_blue=0x7f040004;
-        public static final int grey=0x7f040005;
-        public static final int novote_grey=0x7f040002;
-        public static final int upvote_orange=0x7f040003;
+        public static final int actionbar_background_color=0x7f050001;
+        public static final int actionbar_title_color=0x7f050000;
+        public static final int downvote_blue=0x7f050004;
+        public static final int grey=0x7f050005;
+        public static final int novote_grey=0x7f050002;
+        public static final int upvote_orange=0x7f050003;
     }
     public static final class dimen {
-        public static final int actionbar_compat_button_home_width=0x7f050002;
-        public static final int actionbar_compat_button_width=0x7f050001;
-        public static final int actionbar_compat_height=0x7f050000;
-        public static final int album_art_size=0x7f050003;
+        public static final int actionbar_compat_button_home_width=0x7f060002;
+        public static final int actionbar_compat_button_width=0x7f060001;
+        public static final int actionbar_compat_height=0x7f060000;
+        public static final int album_art_size=0x7f060003;
     }
     public static final class drawable {
         public static final int actionbar_compat_item=0x7f020000;
@@ -67,92 +67,124 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int stop=0x7f02000f;
         public static final int up_off=0x7f020010;
         public static final int up_on=0x7f020011;
+        public static final int widget_background=0x7f020012;
     }
     public static final class id {
-        public static final int actionbar_compat=0x7f060000;
-        public static final int actionbar_compat_item_refresh=0x7f060003;
-        public static final int actionbar_compat_item_refresh_progress=0x7f060002;
-        public static final int actionbar_compat_title=0x7f060001;
-        public static final int album_art=0x7f06000c;
-        public static final int downvote=0x7f06000b;
-        public static final int info=0x7f060015;
-        public static final int login=0x7f060007;
-        public static final int menu_logout=0x7f060017;
-        public static final int menu_refresh=0x7f060004;
-        public static final int menu_tune=0x7f060016;
-        public static final int no_internet=0x7f060008;
-        public static final int password=0x7f060006;
-        public static final int play=0x7f060014;
-        public static final int playlist=0x7f060012;
-        public static final int redditor=0x7f060011;
-        public static final int save=0x7f060013;
-        public static final int song_artist=0x7f06000f;
-        public static final int song_genre=0x7f060010;
-        public static final int song_stream=0x7f06000d;
-        public static final int song_title=0x7f06000e;
-        public static final int upvote=0x7f060009;
-        public static final int username=0x7f060005;
-        public static final int votes=0x7f06000a;
+        public static final int actionbar_compat=0x7f070000;
+        public static final int actionbar_compat_item_refresh=0x7f070003;
+        public static final int actionbar_compat_item_refresh_progress=0x7f070002;
+        public static final int actionbar_compat_title=0x7f070001;
+        public static final int album_art=0x7f07000c;
+        public static final int downvote=0x7f07000b;
+        public static final int info=0x7f070015;
+        public static final int login=0x7f070007;
+        public static final int menu_login=0x7f07002b;
+        public static final int menu_logout=0x7f07002a;
+        public static final int menu_refresh=0x7f070004;
+        public static final int menu_tune=0x7f070029;
+        public static final int no_internet=0x7f070008;
+        public static final int password=0x7f070006;
+        public static final int play=0x7f070014;
+        public static final int playlist=0x7f070012;
+        public static final int redditor=0x7f070011;
+        public static final int save=0x7f070013;
+        public static final int song_artist=0x7f07000f;
+        public static final int song_genre=0x7f070010;
+        public static final int song_stream=0x7f07000d;
+        public static final int song_title=0x7f07000e;
+        public static final int upvote=0x7f070009;
+        public static final int username=0x7f070005;
+        public static final int votes=0x7f07000a;
+        public static final int widget_large_alien=0x7f07001b;
+        public static final int widget_large_artist=0x7f07001e;
+        public static final int widget_large_body_layout=0x7f070017;
+        public static final int widget_large_downvote=0x7f070022;
+        public static final int widget_large_header_layout=0x7f07001a;
+        public static final int widget_large_parent_layout=0x7f070016;
+        public static final int widget_large_song_layout=0x7f07001d;
+        public static final int widget_large_stream_name=0x7f07001c;
+        public static final int widget_large_title=0x7f07001f;
+        public static final int widget_large_toggle_play=0x7f070018;
+        public static final int widget_large_upvote=0x7f070020;
+        public static final int widget_large_vote_layout=0x7f070019;
+        public static final int widget_large_votes=0x7f070021;
+        public static final int widget_small_alien=0x7f070026;
+        public static final int widget_small_artist=0x7f070027;
+        public static final int widget_small_parent_layout=0x7f070023;
+        public static final int widget_small_song_layout=0x7f070024;
+        public static final int widget_small_title=0x7f070028;
+        public static final int widget_small_toggle_play=0x7f070025;
     }
     public static final class layout {
         public static final int actionbar_compat=0x7f030000;
         public static final int actionbar_indeterminate_progress=0x7f030001;
         public static final int login=0x7f030002;
         public static final int main=0x7f030003;
+        public static final int widget_large=0x7f030004;
+        public static final int widget_small=0x7f030005;
     }
     public static final class menu {
-        public static final int main=0x7f090000;
+        public static final int main=0x7f0a0000;
     }
     public static final class string {
-        public static final int album_art=0x7f070021;
-        public static final int already_logged_out=0x7f07000a;
-        public static final int app_name=0x7f070000;
-        public static final int bad_login=0x7f070008;
-        public static final int currently_logged_in_as=0x7f07001c;
-        public static final int downvote=0x7f070020;
-        public static final int info=0x7f070022;
-        public static final int info_artist=0x7f070012;
-        public static final int info_dialog_title=0x7f07000e;
-        public static final int info_filler=0x7f07000f;
-        public static final int info_genre=0x7f070013;
-        public static final int info_playlist=0x7f070015;
-        public static final int info_redditor=0x7f070014;
-        public static final int info_stream=0x7f070010;
-        public static final int info_text=0x7f070016;
-        public static final int info_title=0x7f070011;
-        public static final int login=0x7f070005;
-        public static final int menu_logout=0x7f070002;
-        public static final int menu_tune=0x7f070001;
-        public static final int network_error=0x7f07000c;
-        public static final int no_internet=0x7f070017;
-        public static final int no_password=0x7f070007;
-        public static final int no_username=0x7f070006;
-        public static final int not_logged_in=0x7f07001a;
-        public static final int not_submitted=0x7f070018;
-        public static final int now_logged_in_as=0x7f07001b;
-        public static final int now_logged_out=0x7f070009;
-        public static final int now_tuned_to=0x7f070019;
-        public static final int password=0x7f070004;
-        public static final int play=0x7f07001d;
-        public static final int playing_music=0x7f07000b;
-        public static final int save=0x7f07001e;
-        public static final int tune_dialog_title=0x7f07000d;
-        public static final int upvote=0x7f07001f;
-        public static final int username=0x7f070003;
+        public static final int album_art=0x7f080021;
+        public static final int already_logged_out=0x7f08000a;
+        public static final int app_name=0x7f080000;
+        public static final int bad_login=0x7f080008;
+        public static final int currently_logged_in_as=0x7f08001c;
+        public static final int downvote=0x7f080020;
+        public static final int info=0x7f080022;
+        public static final int info_artist=0x7f080012;
+        public static final int info_dialog_title=0x7f08000e;
+        public static final int info_filler=0x7f08000f;
+        public static final int info_genre=0x7f080013;
+        public static final int info_playlist=0x7f080015;
+        public static final int info_redditor=0x7f080014;
+        public static final int info_stream=0x7f080010;
+        public static final int info_text=0x7f080016;
+        public static final int info_title=0x7f080011;
+        public static final int loading_notification=0x7f080024;
+        public static final int login=0x7f080005;
+        public static final int menu_login=0x7f080027;
+        public static final int menu_logout=0x7f080002;
+        public static final int menu_tune=0x7f080001;
+        public static final int network_error=0x7f08000c;
+        public static final int no_internet=0x7f080017;
+        public static final int no_password=0x7f080007;
+        public static final int no_username=0x7f080006;
+        public static final int no_votes=0x7f080026;
+        public static final int not_logged_in=0x7f08001a;
+        public static final int not_submitted=0x7f080018;
+        public static final int now_logged_in_as=0x7f08001b;
+        public static final int now_logged_out=0x7f080009;
+        public static final int now_tuned_to=0x7f080019;
+        public static final int password=0x7f080004;
+        public static final int play=0x7f08001d;
+        public static final int playing_music=0x7f08000b;
+        public static final int save=0x7f08001e;
+        public static final int tune_dialog_title=0x7f08000d;
+        public static final int upvote=0x7f08001f;
+        public static final int username=0x7f080003;
+        public static final int widget_name_large=0x7f080023;
+        public static final int widget_name_small=0x7f080025;
     }
     public static final class style {
-        public static final int ActionBar=0x7f08000a;
-        public static final int ActionBarCompat=0x7f080001;
-        public static final int ActionBarCompatHomeItem=0x7f080007;
-        public static final int ActionBarCompatItem=0x7f080006;
-        public static final int ActionBarCompatItemBase=0x7f080002;
-        public static final int ActionBarCompatProgressIndicator=0x7f080003;
-        public static final int ActionBarCompatTitle=0x7f080005;
-        public static final int ActionBarCompatTitleBase=0x7f080004;
-        public static final int ActionBarTitle=0x7f08000b;
-        public static final int AppTheme=0x7f080000;
-        public static final int InfoLabel=0x7f080008;
-        public static final int InfoValue=0x7f080009;
+        public static final int ActionBar=0x7f09000a;
+        public static final int ActionBarCompat=0x7f090001;
+        public static final int ActionBarCompatHomeItem=0x7f090007;
+        public static final int ActionBarCompatItem=0x7f090006;
+        public static final int ActionBarCompatItemBase=0x7f090002;
+        public static final int ActionBarCompatProgressIndicator=0x7f090003;
+        public static final int ActionBarCompatTitle=0x7f090005;
+        public static final int ActionBarCompatTitleBase=0x7f090004;
+        public static final int ActionBarTitle=0x7f09000b;
+        public static final int AppTheme=0x7f090000;
+        public static final int InfoLabel=0x7f090008;
+        public static final int InfoValue=0x7f090009;
+    }
+    public static final class xml {
+        public static final int widget_provider_large=0x7f040000;
+        public static final int widget_provider_small=0x7f040001;
     }
     public static final class styleable {
         /** Attributes that can be used with a AppTheme.

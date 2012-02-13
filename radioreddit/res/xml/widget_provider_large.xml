@@ -1,6 +1,6 @@
 <!--
   This file is part of radio reddit for Android.
-
+ 
   radio reddit for Android is free software: you can redistribute it and/or
   modify it under the terms of the GNU General Public License as published
   by the Free Software Foundation, either version 3 of the License, or
@@ -16,27 +16,9 @@
   If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item
-        android:id="@+id/menu_tune"
-        android:title="@string/menu_tune"
-        android:icon="@drawable/ic_action_tune"
-        android:orderInCategory="0"
-        android:showAsAction="always" />
-
-    <item
-        android:id="@+id/menu_logout"
-        android:title="@string/menu_logout"
-        android:orderInCategory="0"
-        android:showAsAction="never"
-        android:visible="false" />
-
-    <item
-        android:id="@+id/menu_login"
-        android:title="@string/menu_login"
-        android:orderInCategory="0"
-        android:showAsAction="never"
-        android:visible="true" />
-
-</menu>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:resizeMode="none"
+    android:previewImage="@drawable/ic_launcher"
+    android:initialLayout="@layout/widget_large"
+    android:minWidth="272dp"
+    android:minHeight="126dp" />

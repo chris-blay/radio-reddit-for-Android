@@ -41,14 +41,14 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.radioreddit.android.AllSongInfo;
-import com.radioreddit.android.MainActivity;
+import com.radioreddit.android.MusicService;
 
 public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
-    private MainActivity mMainActivity;
     private AllSongInfo mSong;
     
-    public GetSongInfo(MainActivity mainActivity, AllSongInfo song) {
-        mMainActivity = mainActivity;
+    private MusicService mService;
+    public GetSongInfo(MusicService service, AllSongInfo song) {
+        mService = service;
         mSong = song;
     }
     
@@ -95,7 +95,7 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
         }
         final String modhash = data1.optString("modhash", "");
         if (modhash.length() > 0) {
-            mMainActivity.setModhash(modhash);
+            mService.setModhash(modhash);
         }
         final JSONArray children = data1.optJSONArray("children");
         if (children == null) {
@@ -154,6 +154,7 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
             mSong.votes = 0;
             mSong.saved = false;
         }
-        mMainActivity.displaySongInfo(mSong);
+        mService.onSongInfoChanged(mSong);
     }
 }
+

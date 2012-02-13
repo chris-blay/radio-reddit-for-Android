@@ -18,23 +18,22 @@
 
 package com.radioreddit.android;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,11 +43,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.radioreddit.android.actionbarcompat.ActionBarActivity;
-import com.radioreddit.android.api.RedditApi;
-import com.radioreddit.android.api.Relay;
-import com.radioreddit.android.api.Stream;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements PlaystateChangedListener {
+    private static final String TAG = "MainActivty";
+    private static final boolean DEBUG = false;
+    
     // Used for preference names
     public static final String PREF_STREAM = "stream";
     public static final String PREF_USER = "user";
@@ -59,35 +58,8 @@ public class MainActivity extends ActionBarActivity {
     private static final int DIALOG_TUNE = 1;
     private static final int DIALOG_INFO = 2;
     
-    // How often we should request updated song information from the API
-    private static final int UPDATE_INTERVAL = 15000; // 15s
-    
-    private static final Stream[] STREAMS = {
-        new Stream("main", "/api/", new Relay[] {new Relay("main.radioreddit.com:8080")}),
-        new Stream("electronic", "/api/electronic/", new Relay[] {new Relay("electronic.radioreddit.com:8080")}),
-        new Stream("rock", "/api/rock/", new Relay[] {new Relay("rock.radioreddit.com:8080")}),
-        new Stream("metal", "/api/metal/", new Relay[] {new Relay("texas.radioreddit.com:8090")}),
-        new Stream("indie", "/api/indie/", new Relay[] {new Relay("indie.radioreddit.com:8080")}),
-        new Stream("hiphop", "/api/hiphop/", new Relay[] {new Relay("hiphop.radioreddit.com:8080")}),
-        new Stream("random", "/api/random/", new Relay[] {new Relay("random.radioreddit.com:8080")}),
-        new Stream("talk", "/api/talk/", new Relay[] {new Relay("talk.radioreddit.com:8080")}),
-    };
-    private static final CharSequence[] STREAM_NAMES = {
-        "main",
-        "electronic",
-        "rock",
-        "metal",
-        "indie",
-        "hiphop",
-        "random",
-        "talk",
-    };
-    
     private Context mContext;
     private Resources mResources;
-    private SharedPreferences mPreferences;
-    private Timer mTimer;
-    private Stream mStream;
     
     private TextView mNoInternet;
     private ImageButton mUpvote;
@@ -102,23 +74,51 @@ public class MainActivity extends ActionBarActivity {
     private ImageButton mSave;
     private ImageButton mPlay;
     private ImageButton mInfo;
-    private AllSongInfo mSongInfo;
     
     // Connection stuff for the music playing service 
     private MusicService mService;
     private final ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mService = ((MusicService.MusicBinder) service).getService();
-            mService.attach(MainActivity.this);
-            if (mService.isPlaying()) {
-                mPlay.setImageResource(R.drawable.stop);
-            } else {
-                mPlay.setImageResource(R.drawable.play);
-            }
+            mService.registerPlaystateListener(MainActivity.this);
         }
         @Override
         public void onServiceDisconnected(ComponentName className) {
+            mService.unregisterPlaystateListener(MainActivity.this);
             mService = null;
+        }
+    };
+    
+    private BroadcastReceiver mBackendReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (action.equals(MusicService.ACTION_SONG_INFO_CHANGED)) {
+                if (DEBUG) {
+                    Log.d(TAG, "++Song Info Intent Received++");
+                }
+                final AllSongInfo songinfo = intent.getParcelableExtra(MusicService.KEY_SONG_INFO);
+                displaySongInfo(songinfo);
+            } else if (action.equals(MusicService.ACTION_STATION_CHANGED)) {
+                if (DEBUG) {
+                    Log.d(TAG, "++Station Change Intent Received++");
+                }
+                final String streamname = intent.getExtras().getString(MusicService.KEY_STREAM_NAME);
+                mSongStream.setText(streamname);
+            } else if (action.equals(MusicService.ACTION_REQUEST_UPDATE)) {
+                if (this.getResultCode() == Activity.RESULT_OK) {
+                    if (DEBUG) {
+                        Log.d(TAG, "++Update Intent Received Ok++");
+                    }
+                    final Bundle bundle = this.getResultExtras(false);
+                    if (bundle != null) {
+                        final AllSongInfo songinfo = bundle.getParcelable(MusicService.KEY_SONG_INFO);
+                        final String streamname = bundle.getString(MusicService.KEY_STREAM_NAME);
+                        displaySongInfo(songinfo);
+                        mSongStream.setText(streamname);
+                    }
+                }
+            }
         }
     };
     
@@ -132,13 +132,16 @@ public class MainActivity extends ActionBarActivity {
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        if (DEBUG) {
+            Log.d(TAG, "++onCreate++");
+        }
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
         // Initialize member variables
         mContext = getApplicationContext();
         mResources = getResources();
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         mNoInternet = (TextView) findViewById(R.id.no_internet);
         mUpvote = (ImageButton) findViewById(R.id.upvote);
         mVotes = (TextView) findViewById(R.id.votes);
@@ -185,47 +188,54 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         
-        // Set saved stream from preferences or use default
-        mStream = STREAMS[mPreferences.getInt(PREF_STREAM, 0)];
-        mSongStream.setText(mStream.name);
-        
-        // We don't know what song is playing yet
-        displaySongInfo(null);
-        
         // Start the music playing service this allows the service to continue after the application has lost focus
         startService(new Intent(mContext, MusicService.class));
-        
-        // Connect to the music playing service
-        bindService(new Intent(mContext, MusicService.class), mConnection, Context.BIND_AUTO_CREATE);
-        
-        // Inform user of currently logged in user
-        final String user = getUser();
-        if (user == null) {
-            toast(R.string.not_logged_in);
-        } else {
-            toast(getString(R.string.currently_logged_in_as) + " " + getUser());
+    }
+    
+    @Override
+    protected void onStart() {
+        if (DEBUG) {
+            Log.d(TAG, "++onStart++");
         }
+        super.onStart();
+        bindService(new Intent(mContext, MusicService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
     
     @Override
     public void onResume() {
+        if (DEBUG) {
+            Log.d(TAG, "++onResume++");
+        }
         super.onResume();
-        startTimer();
+        final IntentFilter filter = new IntentFilter();
+        filter.addAction(MusicService.ACTION_SONG_INFO_CHANGED);
+        filter.addAction(MusicService.ACTION_STATION_CHANGED);
+        filter.addAction(MusicService.ACTION_REQUEST_UPDATE);
+        registerReceiver(mBackendReceiver, filter);
+        
+        // Send a loopback call to the service for the most up to date data.
+        final Intent intent = new Intent(MusicService.ACTION_REQUEST_UPDATE);
+        mContext.sendOrderedBroadcast(intent, null, mBackendReceiver, null, Activity.RESULT_FIRST_USER, null, null);
     }
-    
+
     @Override
     public void onPause() {
+        if (DEBUG) {
+            Log.d(TAG, "++onPause++");
+        }
         super.onPause();
-        stopTimer();
+        unregisterReceiver(mBackendReceiver);
     }
     
     @Override
     public void onDestroy() {
+        if (DEBUG) {
+            Log.d(TAG, "++OnDestroy++");
+        }
         super.onDestroy();
         
         // Disconnect from the music playing service if it is connected
         if (mService != null) {
-            mService.detatch();
             unbindService(mConnection);
         }
     }
@@ -235,6 +245,26 @@ public class MainActivity extends ActionBarActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+    
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem loginItem = menu.findItem(R.id.menu_login);
+        MenuItem logoutItem = menu.findItem(R.id.menu_logout);
+        
+        // Changes the visibility of login/logout items depending on the login
+        //  state. On Version 11+ invalidateOptionMenu() will need to be called
+        //  from login() and logout() to update the menuitems in the actionbar
+        if (mService != null) {
+            if (mService.loggedIn()) {
+                loginItem.setVisible(false);
+                logoutItem.setVisible(true);
+            } else {
+                loginItem.setVisible(true);
+                logoutItem.setVisible(false);
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
     
     @Override
@@ -249,6 +279,9 @@ public class MainActivity extends ActionBarActivity {
             case R.id.menu_logout:
                 logout();
                 break;
+            case R.id.menu_login:
+                login();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -261,20 +294,13 @@ public class MainActivity extends ActionBarActivity {
         case DIALOG_TUNE:
             builder.setTitle(R.string.tune_dialog_title);
             builder.setNeutralButton(android.R.string.cancel, mDialogCancelListener);
-            builder.setItems(STREAM_NAMES, new DialogInterface.OnClickListener() {
+            builder.setItems(MusicService.STREAM_NAMES, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    stopTimer();
-                    mStream = STREAMS[which];
-                    mSongStream.setText(mStream.name);
-                    startTimer();
-                    if (mService != null && mService.isPlaying()) {
-                        mService.play("http://" + mStream.relays[0].server);
-                    }
-                    SharedPreferences.Editor editor = mPreferences.edit();
-                    editor.putInt(PREF_STREAM, which);
-                    editor.commit();
-                    toast(getString(R.string.now_tuned_to) + " " + mStream.name);
+                    final Intent chgStream = new Intent(MusicService.ACTION_PLAYER_COMMAND);
+                    chgStream.putExtra(MusicService.KEY_COMMAND, MusicService.CMD_CHANGE_STREAM);
+                    chgStream.putExtra("stream_id", which);
+                    sendBroadcast(chgStream);
                 }
             });
             return builder.create();
@@ -292,132 +318,82 @@ public class MainActivity extends ActionBarActivity {
     
     // Called only after the song info changes
     public void displaySongInfo(AllSongInfo songInfo) {
-        mSongInfo = songInfo;
-        if (songInfo == null) {
-            final String filler = getString(R.string.info_filler);
-            if (mService != null) {
-                mService.stop();
-                mPlay.setImageResource(R.drawable.play);
-            }
-            mNoInternet.setVisibility(View.VISIBLE);
-            mSongTitle.setText(filler);
-            mSongArtist.setText(filler);
-            mSongGenre.setText(filler);
-            mRedditor.setText(filler);
-            mPlaylist.setText(filler);
-        } else {
-            mNoInternet.setVisibility(View.GONE);
-            mSongTitle.setText(songInfo.title);
-            mSongArtist.setText(songInfo.artist);
-            mSongGenre.setText(songInfo.genre);
-            mRedditor.setText(songInfo.redditor);
-            mPlaylist.setText(songInfo.playlist);
-        }
-        displayStatus();
+        mNoInternet.setVisibility(View.GONE);
+        mSongTitle.setText(songInfo.title);
+        mSongArtist.setText(songInfo.artist);
+        mSongGenre.setText(songInfo.genre);
+        mRedditor.setText(songInfo.redditor);
+        mPlaylist.setText(songInfo.playlist);
+        displayStatus(songInfo);
     }
     
-    // Called whenever the song status or info changes
-    private void displayStatus() {
-        if (mSongInfo == null) {
-            final String filler = getString(R.string.info_filler);
-            mVotes.setText(filler);
+    private void displayStatus(AllSongInfo songinfo) {
+        mVotes.setText(String.valueOf(songinfo.votes));
+        if (songinfo.upvoted) {
+            mUpvote.setImageResource(R.drawable.up_on);
+            mDownvote.setImageResource(R.drawable.down_off);
+            mVotes.setTextColor(mResources.getColor(R.color.upvote_orange));
+        } else if (songinfo.downvoted) {
+            mUpvote.setImageResource(R.drawable.up_off);
+            mDownvote.setImageResource(R.drawable.down_on);
+            mVotes.setTextColor(mResources.getColor(R.color.downvote_blue));
+        } else {
             mUpvote.setImageResource(R.drawable.up_off);
             mDownvote.setImageResource(R.drawable.down_off);
             mVotes.setTextColor(mResources.getColor(R.color.novote_grey));
+        }
+        if (songinfo.saved) {
+            mSave.setImageResource(R.drawable.star_on);
+        } else {
             mSave.setImageResource(R.drawable.star_off);
-        } else {
-            mVotes.setText(String.valueOf(mSongInfo.votes));
-            if (mSongInfo.upvoted) {
-                mUpvote.setImageResource(R.drawable.up_on);
-                mDownvote.setImageResource(R.drawable.down_off);
-                mVotes.setTextColor(mResources.getColor(R.color.upvote_orange));
-            } else if (mSongInfo.downvoted) {
-                mUpvote.setImageResource(R.drawable.up_off);
-                mDownvote.setImageResource(R.drawable.down_on);
-                mVotes.setTextColor(mResources.getColor(R.color.downvote_blue));
-            } else {
-                mUpvote.setImageResource(R.drawable.up_off);
-                mDownvote.setImageResource(R.drawable.down_off);
-                mVotes.setTextColor(mResources.getColor(R.color.novote_grey));
-            }
-            if (mSongInfo.saved) {
-                mSave.setImageResource(R.drawable.star_on);
-            } else {
-                mSave.setImageResource(R.drawable.star_off);
-            }
         }
     }
     
-    private void startTimer() {
-        RedditApi.requestSongInfo(MainActivity.this, getCookie(), "http://www.radioreddit.com" + mStream.status + "status.json");
-        mTimer = new Timer();
-        mTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                RedditApi.requestSongInfo(MainActivity.this, getCookie(), "http://www.radioreddit.com" + mStream.status + "status.json");
-            }
-        }, UPDATE_INTERVAL, UPDATE_INTERVAL);
-    }
-    
-    private void stopTimer() {
-        if (mTimer != null) {
-            mTimer.cancel();
-        }
-        mTimer = null;
-    }
-    
+    // Tells the service to toggle the upvote on the currently playing track
     private void toggleUpvote() {
-        if (mSongInfo == null) {
-            toast(R.string.no_internet);
-        } else if (mSongInfo.reddit_id == null) {
-            toast(R.string.not_submitted);
-        } else if (!loggedIn()) {
+        if (!mService.loggedIn()) {
             login();
         } else {
-            mSongInfo = RedditApi.toggleUpvote(getModhash(), getCookie(), mSongInfo);
-            displayStatus();
+            final Intent cmdUpvote = new Intent(MusicService.ACTION_PLAYER_COMMAND);
+            cmdUpvote.putExtra(MusicService.KEY_COMMAND, MusicService.CMD_UPVOTE);
+            sendBroadcast(cmdUpvote);
         }
     }
     
+    // Tells the service to toggle the downvote on the currently playing track
     private void toggleDownvote() {
-        if (mSongInfo == null) {
-            toast(R.string.no_internet);
-        } else if (mSongInfo.reddit_id == null) {
-            toast(R.string.not_submitted);
-        } else if (!loggedIn()) {
+        if (!mService.loggedIn()) {
             login();
         } else {
-            mSongInfo = RedditApi.toggleDownvote(getModhash(), getCookie(), mSongInfo);
-            displayStatus();
+            Intent cmdDownvote = new Intent(MusicService.ACTION_PLAYER_COMMAND);
+            cmdDownvote.putExtra(MusicService.KEY_COMMAND, MusicService.CMD_DOWNVOTE);
+            sendBroadcast(cmdDownvote);
         }
     }
     
+    // Tells the service to toggle the save state of the current track
     private void toggleSave() {
-        if (mSongInfo == null) {
-            toast(R.string.no_internet);
-        } else if (mSongInfo.reddit_id == null) {
-            toast(R.string.not_submitted);
-        } else if (!loggedIn()) {
+        if (!mService.loggedIn()) {
             login();
         } else {
-            mSongInfo = RedditApi.toggleSave(getModhash(), getCookie(), mSongInfo);
-            displayStatus();
+            Intent cmdSave = new Intent(MusicService.ACTION_PLAYER_COMMAND);
+               cmdSave.putExtra(MusicService.KEY_COMMAND, MusicService.CMD_SAVE);
+            sendBroadcast(cmdSave);
         }
     }
     
     private void togglePlay() {
-        if (mService == null) {
-            return;
-        } else if (mSongInfo == null) {
-            toast(R.string.no_internet);
-            return;
-        }
-        if (mService.isPlaying()) {
-            mService.stop();
-            mPlay.setImageResource(R.drawable.play);
-        } else {
-            mService.play("http://" + mStream.relays[0].server);
+        Intent togglePlayIntent = new Intent(MusicService.ACTION_PLAYER_COMMAND);
+        togglePlayIntent.putExtra(MusicService.KEY_COMMAND, MusicService.CMD_TOGGLE_PLAY);
+        sendBroadcast(togglePlayIntent);
+    }
+    
+    // Called by the backend service whenever the stream starts or stops playing
+    public void onPlaystateChanged(boolean isPlaying) {
+        if (isPlaying) {
             mPlay.setImageResource(R.drawable.stop);
+        } else {
+            mPlay.setImageResource(R.drawable.play);
         }
     }
     
@@ -425,47 +401,9 @@ public class MainActivity extends ActionBarActivity {
         startActivity(new Intent(mContext, LoginActivity.class));
     }
     
-    private String getUser() {
-        return mPreferences.getString(PREF_USER, null);
-    }
-    
-    private String getModhash() {
-        return mPreferences.getString(PREF_MODHASH, null);
-    }
-    
-    public void setModhash(String modhash) {
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putString(PREF_MODHASH, modhash);
-        editor.commit();
-    }
-    
-    private String getCookie() {
-        return mPreferences.getString(PREF_COOKIE, null);
-    }
-    
-    private boolean loggedIn() {
-        return getUser() != null && getModhash() != null && getCookie() != null;
-    }
-    
     private void logout() {
-        if (loggedIn()) {
-            // Remove modhash and cookie from preferences
-            final SharedPreferences.Editor editor = mPreferences.edit();
-            editor.remove(PREF_USER);
-            editor.remove(PREF_MODHASH);
-            editor.remove(PREF_COOKIE);
-            editor.commit();
-            // Clear up/down vote and star
-            if (mSongInfo != null) {
-                mSongInfo.upvoted = false;
-                mSongInfo.downvoted = false;
-                mSongInfo.saved = false;
-                displayStatus();
-            }
-            // Inform user of change
-            toast(R.string.now_logged_out);
-        } else {
-            toast(R.string.already_logged_out);
+        if (mService != null) {
+            mService.logout();
         }
     }
     
@@ -477,3 +415,4 @@ public class MainActivity extends ActionBarActivity {
         Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
     }
 }
+

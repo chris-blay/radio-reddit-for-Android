@@ -27,15 +27,15 @@ import android.os.AsyncTask;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.radioreddit.android.AllSongInfo;
-import com.radioreddit.android.MainActivity;
+import com.radioreddit.android.MusicService;
 import com.radioreddit.android.R;
 
 public class GetStationStatus extends AsyncTask<String, Integer, StationStatus> {
-    private MainActivity mMainActivity;
     private String mCookie;
     
-    public GetStationStatus(MainActivity mainActivity, String cookie) {
-        mMainActivity = mainActivity;
+    private MusicService mService;
+    public GetStationStatus(MusicService service, String cookie) {
+        mService = service;
         mCookie = cookie;
     }
     
@@ -61,8 +61,6 @@ public class GetStationStatus extends AsyncTask<String, Integer, StationStatus> 
     @Override
     protected void onPostExecute(StationStatus result) {
         if (result == null) {
-            // No Internet connection
-            mMainActivity.displaySongInfo(null);
             return;
         }
         
@@ -70,7 +68,7 @@ public class GetStationStatus extends AsyncTask<String, Integer, StationStatus> 
         final StationStatus status = result;
         SongInfo currentSong;
         if (status.songs == null || status.songs.song == null || status.songs.song.isEmpty()) {
-            final String filler = mMainActivity.getString(R.string.info_filler);
+            final String filler = mService.getString(R.string.info_filler);
             currentSong = new SongInfo();
             currentSong.title = filler;
             currentSong.artist = filler;
@@ -92,6 +90,7 @@ public class GetStationStatus extends AsyncTask<String, Integer, StationStatus> 
         // Not all the information we need is available yet. We need to make
         // a request to reddit to get vote/save info for this song before
         // sending back to the main activity
-        new GetSongInfo(mMainActivity, song).execute(mCookie);
+        new GetSongInfo(mService, song).execute(mCookie);
     }
 }
+

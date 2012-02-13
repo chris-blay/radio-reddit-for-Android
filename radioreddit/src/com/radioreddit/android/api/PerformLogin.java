@@ -40,16 +40,14 @@ import android.net.ParseException;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.radioreddit.android.LoginActivity;
-
 public class PerformLogin extends AsyncTask<String, Integer, Boolean> {
-    private LoginActivity mLoginActivity;
     private String mUser;
     private String mModhash;
     private String mCookie;
+    private LoginResultCallback mCallback;
     
-    public PerformLogin(LoginActivity loginActivity) {
-        mLoginActivity = loginActivity;
+    public PerformLogin(LoginResultCallback callback) {
+        mCallback = callback;
     }
     
     @Override
@@ -117,9 +115,10 @@ public class PerformLogin extends AsyncTask<String, Integer, Boolean> {
     @Override
     protected void onPostExecute(Boolean success) {
         if (success) {
-            mLoginActivity.loginResult(true, mUser, mModhash, mCookie);
+            mCallback.onLoginResult(true, mUser, mModhash, mCookie);
         } else {
-            mLoginActivity.loginResult(false, null, null, null);
+            mCallback.onLoginResult(false, null, null, null);
         }
     }
 }
+
