@@ -25,12 +25,11 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-public class LargeWidget extends BaseWidget {
+public class WidgetLarge extends WidgetBase {
     private static final String TAG = "LargeWidget";
-    private static final boolean DEBUG = false;
     
     private static final ComponentName SELF = new ComponentName(
-            "com.radioreddit.android", "com.radioreddit.android.LargeWidget");
+            "com.radioreddit.android", "com.radioreddit.android.WidgetLarge");
     
     @Override
     protected RemoteViews generateViews(Context context) {
@@ -39,7 +38,7 @@ public class LargeWidget extends BaseWidget {
     
     @Override
     protected void updateStreamName(Context context, String station, RemoteViews views) {
-        views.setTextViewText(R.id.widget_large_stream_name, station);
+        views.setTextViewText(R.id.widget_stream, station);
     }
     
     @Override
@@ -48,32 +47,39 @@ public class LargeWidget extends BaseWidget {
             Log.d(TAG, "++Update Song Info++");
         }
         
-        // Display the artist and track info
-        views.setTextViewText(R.id.widget_large_artist, song.artist);
-        views.setTextViewText(R.id.widget_large_title, song.title);
+        if (song == null) {
+            return;
+        }
         
-        views.setTextViewText(R.id.widget_large_votes, Integer.toString(song.votes));
+        // Display the artist and track info
+        views.setTextViewText(R.id.widget_artist, song.artist);
+        views.setTextViewText(R.id.widget_title, song.title);
+        views.setTextViewText(R.id.widget_genre, song.genre);
+        views.setTextViewText(R.id.widget_redditor, song.redditor);
+        views.setTextViewText(R.id.widget_playlist, song.playlist);
+        
+        views.setTextViewText(R.id.widget_votes, Integer.toString(song.votes));
         if (song.upvoted) {
-            views.setImageViewResource(R.id.widget_large_upvote, R.drawable.up_on);
-            views.setImageViewResource(R.id.widget_large_downvote, R.drawable.down_off);
-            views.setTextColor(R.id.widget_large_votes, R.color.upvote_orange);
+            views.setImageViewResource(R.id.widget_upvote, R.drawable.up_on);
+            views.setImageViewResource(R.id.widget_downvote, R.drawable.down_off);
+            views.setTextColor(R.id.widget_votes, R.color.upvote_orange);
         } else if (song.downvoted) {
-            views.setImageViewResource(R.id.widget_large_upvote, R.drawable.up_off);
-            views.setImageViewResource(R.id.widget_large_downvote, R.drawable.down_on);
-            views.setTextColor(R.id.widget_large_votes, R.color.downvote_blue);
+            views.setImageViewResource(R.id.widget_upvote, R.drawable.up_off);
+            views.setImageViewResource(R.id.widget_downvote, R.drawable.down_on);
+            views.setTextColor(R.id.widget_votes, R.color.downvote_blue);
         } else {
-            views.setImageViewResource(R.id.widget_large_upvote, R.drawable.up_off);
-            views.setImageViewResource(R.id.widget_large_downvote, R.drawable.down_off);
-            views.setTextColor(R.id.widget_large_votes, R.color.novote_grey);
+            views.setImageViewResource(R.id.widget_upvote, R.drawable.up_off);
+            views.setImageViewResource(R.id.widget_downvote, R.drawable.down_off);
+            views.setTextColor(R.id.widget_votes, R.color.novote_grey);
         }
     }
     
     @Override
     protected void updatePlaystate(Context context, boolean isPlaying, RemoteViews views) {
         if (isPlaying) {
-            views.setImageViewResource(R.id.widget_large_toggle_play, R.drawable.stop);
+            views.setImageViewResource(R.id.widget_toggle_play, R.drawable.stop);
         } else {
-            views.setImageViewResource(R.id.widget_large_toggle_play, R.drawable.play);
+            views.setImageViewResource(R.id.widget_toggle_play, R.drawable.play);
         }
     }
     
@@ -82,7 +88,7 @@ public class LargeWidget extends BaseWidget {
         // Link to main activity
         final Intent mainIntent = new Intent(context, MainActivity.class);
         final PendingIntent mainPending = PendingIntent.getActivity(context, 0, mainIntent, 0);
-        views.setOnClickPendingIntent(R.id.widget_large_alien, mainPending);
+        views.setOnClickPendingIntent(R.id.widget_icon, mainPending);
 
         // Author's Note: pendingintents have some weird behavior, they are
         //  recycled if the action and data uri are the same, but not the extras.
@@ -94,20 +100,20 @@ public class LargeWidget extends BaseWidget {
         final Intent upvoteIntent = new Intent(MusicService.ACTION_PLAYER_COMMAND);
         upvoteIntent.putExtra(MusicService.KEY_COMMAND, MusicService.CMD_UPVOTE);
         final PendingIntent upvotePending = PendingIntent.getBroadcast(context, 0, upvoteIntent, 0);
-        views.setOnClickPendingIntent(R.id.widget_large_upvote, upvotePending);
+        views.setOnClickPendingIntent(R.id.widget_upvote, upvotePending);
         
         // Send downvote command to service
         final Intent downvoteIntent = new Intent(MusicService.ACTION_PLAYER_COMMAND);
         downvoteIntent.putExtra(MusicService.KEY_COMMAND, MusicService.CMD_DOWNVOTE);
         final PendingIntent downvotePending = PendingIntent.getBroadcast(context, 1, downvoteIntent, 0);
-        views.setOnClickPendingIntent(R.id.widget_large_downvote, downvotePending);
+        views.setOnClickPendingIntent(R.id.widget_downvote, downvotePending);
         
         // Spools up the service if it isn't running in the background and sends a toggle playstate command
         final Intent toggleIntent = new Intent(MusicService.ACTION_PLAYER_COMMAND);
         toggleIntent.setComponent(new ComponentName("com.radioreddit.android", "com.radioreddit.android.MusicService"));
         toggleIntent.putExtra(MusicService.KEY_COMMAND, MusicService.CMD_TOGGLE_PLAY);
         PendingIntent togglePending = PendingIntent.getService(context, 2, toggleIntent, 0);
-        views.setOnClickPendingIntent(R.id.widget_large_toggle_play, togglePending);
+        views.setOnClickPendingIntent(R.id.widget_toggle_play, togglePending);
     }
     
     @Override
@@ -115,4 +121,3 @@ public class LargeWidget extends BaseWidget {
         return SELF;
     }
 }
-

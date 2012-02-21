@@ -57,7 +57,6 @@
     <string name="now_tuned_to">now tuned to</string>
     <string name="not_logged_in">not logged in</string>
     <string name="now_logged_in_as">now logged in as</string>
-    <string name="currently_logged_in_as">currently logged in as</string>
 
     <string name="play">toggle play</string>
     <string name="save">toggle save</string>

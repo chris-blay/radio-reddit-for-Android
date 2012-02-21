@@ -28,9 +28,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-public abstract class BaseWidget extends AppWidgetProvider {
+public abstract class WidgetBase extends AppWidgetProvider {
     private static final String TAG = "BaseWidget";
-    private static final boolean DEBUG = false;
+    protected static final boolean DEBUG = false;
     
     protected abstract RemoteViews generateViews(Context context);
     protected abstract void updateSongInfo(Context context, AllSongInfo song, RemoteViews views);

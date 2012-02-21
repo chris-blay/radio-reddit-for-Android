@@ -35,7 +35,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,7 +52,7 @@
         <service android:name=".MusicService" />
 
         <receiver
-            android:name="LargeWidget"
+            android:name=".WidgetLarge"
             android:label="@string/widget_name_large">
 
             <intent-filter>
@@ -65,7 +66,7 @@
         </receiver>
 
         <receiver
-            android:name="SmallWidget"
+            android:name=".WidgetSmall"
             android:label="@string/widget_name_small">
 
             <intent-filter>

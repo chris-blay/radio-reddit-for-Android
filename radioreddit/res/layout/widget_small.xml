@@ -1,6 +1,6 @@
 <!--
   This file is part of radio reddit for Android.
- 
+
   radio reddit for Android is free software: you can redistribute it and/or
   modify it under the terms of the GNU General Public License as published
   by the Free Software Foundation, either version 3 of the License, or
@@ -14,34 +14,145 @@
   You should have received a copy of the GNU General Public License
   along with radio reddit for Android.
   If not, see <http://www.gnu.org/licenses/>.
-  -->
+-->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/widget_small_parent_layout"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/widget_background">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:layout_margin="3dp"
+    android:padding="3dp">
 
     <LinearLayout
-        android:id="@+id/widget_small_song_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/widget_small_toggle_play"
-        android:layout_toRightOf="@+id/widget_small_alien"
+        android:id="@+id/widget_button_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/widget_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_home" />
+
+         <ImageView
+            android:id="@+id/widget_toggle_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/play"
+            android:src="@drawable/play" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/widget_vote_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginRight="3dip"
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/widget_upvote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:contentDescription="@string/upvote"
+            android:src="@drawable/up_off" />
+
+        <TextView
+            android:id="@+id/widget_votes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/no_votes"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/widget_downvote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:contentDescription="@string/downvote"
+            android:src="@drawable/down_off" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/widget_label_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginRight="3dip"
+        android:layout_toRightOf="@id/widget_vote_layout"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/widget_small_artist"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical|right"
+            android:layout_weight="1"
+            android:textColor="@color/grey"
+            android:textSize="16sp"
+            android:text="@string/info_stream" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|right"
+            android:layout_weight="1"
+            android:textColor="@color/grey"
+            android:textSize="16sp"
+            android:text="@string/info_title" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|right"
+            android:layout_weight="1"
+            android:textColor="@color/grey"
+            android:textSize="16sp"
+            android:text="@string/info_artist" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/widget_song_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/widget_label_layout"
+        android:layout_toLeftOf="@id/widget_button_layout"
+        android:layout_marginRight="3dip"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/widget_stream"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_weight="1"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
+         <TextView
+            android:id="@+id/widget_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_weight="1"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:lines="1"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
-            android:text="@string/info_artist"
-            android:textSize="24dp">
+            android:textColor="#000"
+            android:textSize="20sp">
 
             <requestFocus
                 android:duplicateParentState="true"
@@ -51,41 +162,27 @@
         </TextView>
 
         <TextView
-            android:id="@+id/widget_small_title"
-            android:layout_width="fill_parent"
+            android:id="@+id/widget_artist"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_weight="1"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:lines="1"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
-            android:text="@string/info_title"
-            android:textSize="24dp">
+            android:textColor="#000"
+            android:textSize="20sp">
 
-            <requestFocus
+            <!-- <requestFocus
                 android:duplicateParentState="true"
                 android:focusable="true"
-                android:focusableInTouchMode="true" />
+                android:focusableInTouchMode="true" /> -->
 
         </TextView>
 
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/widget_small_alien"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/ic_launcher" />
-
-
-    <ImageView
-        android:id="@+id/widget_small_toggle_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:src="@drawable/play" android:layout_alignParentRight="true" />
 
 </RelativeLayout>

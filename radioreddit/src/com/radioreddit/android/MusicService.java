@@ -50,7 +50,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class MusicService extends Service {
-    private static final String TAG = "RadioReddit Service";
+    private static final String TAG = "radio reddit - music service";
     private static final boolean DEBUG = false;
     
     private static final int NOTIFICATION = R.string.playing_music;
@@ -238,20 +238,11 @@ public class MusicService extends Service {
         filter.addAction(ACTION_REQUEST_UPDATE);
         registerReceiver(mCommandReceiver, filter);
         
-        // Drop some filler data into the songinfo until it can be loaded
-        mSongInfo = new AllSongInfo();
-        final String filler = getString(R.string.info_filler);
-        mSongInfo.artist = filler;
-        mSongInfo.title = filler;
-        mSongInfo.genre = filler;
-        mSongInfo.redditor = filler;
-        mSongInfo.playlist = filler;
-        mSongInfo.votes = 0;
-        mSongInfo.downvoted = false;
-        mSongInfo.upvoted = false;
-        
         // Grab any saved stream and if one was never saved default to Main
-        mStream = STREAMS[mPreferences.getInt(PREF_STREAM, 0)];
+        changeStream(mPreferences.getInt(PREF_STREAM, 0));
+        
+        // Drop some filler data into the songinfo until it can be loaded
+        clearSongInfo();
         
         // Set the playchangedlistener for the widgets
         registerPlaystateListener(mWidgetPlaystateListener);
@@ -288,7 +279,7 @@ public class MusicService extends Service {
         // Remove any reference to the media player
         stop();
         
-        // Unregister widget playstate listener.
+        // Unregister widget playstate listener
         unregisterPlaystateListener(mWidgetPlaystateListener);
         
         // Unregister the command receiver
@@ -355,24 +346,8 @@ public class MusicService extends Service {
     // Used in this class as well as in the main activity to determine if we
     // are currently playing music
     public boolean isPlaying() {
-        return mMediaPlayer != null && mMediaPlayer.isPlaying();
+        return mMediaPlayer != null /* && mMediaPlayer.isPlaying() */;
     }
-    
-/*
-    public int getDuration() {
-        if (mMediaPlayer != null) {
-            return mMediaPlayer.getDuration();
-        }
-        return -1;
-    }
-    
-    public int getCurrentPosition() {
-        if (mMediaPlayer != null) {
-            return mMediaPlayer.getCurrentPosition();
-        }
-        return -1;
-    }
-*/
     
     private void processCommand(int command, Intent intent) {
         switch (command) {
@@ -407,9 +382,11 @@ public class MusicService extends Service {
             Log.d(TAG, "++ChangeStream++");
         }
         
-        // Set the current station and begin playback
+        // Set the current station and begin playback if already playing
         mStream = STREAMS[streamId];
-        play("http://" + mStream.relays[0].server);
+        if (isPlaying()) {
+            play("http://" + mStream.relays[0].server);
+        }
         
         // Save streamId for future reference
         SharedPreferences.Editor editor = mPreferences.edit();
@@ -440,6 +417,10 @@ public class MusicService extends Service {
         }
         mSongInfo = song;
         
+        if (!isPlaying()) {
+            return;
+        }
+        
         // Update the notification
         updateNotification(mSongInfo.artist, mSongInfo.title, mStream.name);
         updateWidget();
@@ -456,6 +437,7 @@ public class MusicService extends Service {
     
     private void stopTimer() {
         mHandler.removeCallbacks(mUpdater);
+        clearSongInfo();
     }
     
     private void toggleUpvote() {
@@ -528,7 +510,7 @@ public class MusicService extends Service {
         editor.putString(PREF_USER, username);
         editor.putString(PREF_MODHASH, modhash);
         editor.putString(PREF_COOKIE, cookie);
-        editor.commit();    
+        editor.commit();
         toast(getString(R.string.now_logged_in_as) + " " + username);
     }
     
@@ -582,8 +564,7 @@ public class MusicService extends Service {
     private void showNotification() {
         final CharSequence text = getText(NOTIFICATION);
         mNotification = new Notification(R.drawable.ic_stat_notify_playing, text, System.currentTimeMillis());
-        // Drop in some dummy text for artist and title until the service grabs the appropriate info.
-        updateNotification(getString(R.string.loading_notification), "", mStream.name);
+        updateNotification();
         startForeground(NOTIFICATION, mNotification);
     }
     
@@ -599,6 +580,10 @@ public class MusicService extends Service {
     /**
      * Updates the notification when there is a song or stream change. 
      */
+    private void updateNotification() {
+        // Drop in some dummy text for artist and title until the service grabs the appropriate info.
+        updateNotification(getString(R.string.loading_notification), "", mStream.name);
+    }
     private void updateNotification(String artist, String title, String station) {
         if (mNotification != null) {
             NotificationManager nm = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -614,8 +599,8 @@ public class MusicService extends Service {
             
             // Update the title and text of the notification then send it off to be updated.
             mNotification.setLatestEventInfo(mContext,
-                    "Playing " + station + " Station",
-                    artist + " - " + title,
+                    "Playing " + station + " Stream",
+                    artist + (title.length() > 0 ? " - " + title : ""),
                     contentIntent);
             nm.notify(NOTIFICATION, mNotification);
         }
@@ -625,6 +610,27 @@ public class MusicService extends Service {
         MusicService getService() {
             return MusicService.this;
         }
+    }
+    
+    private void clearSongInfo() {
+        mSongInfo = new AllSongInfo();
+        final String filler = getString(R.string.info_filler);
+        mSongInfo.artist = filler;
+        mSongInfo.title = filler;
+        mSongInfo.genre = filler;
+        mSongInfo.redditor = filler;
+        mSongInfo.playlist = filler;
+        mSongInfo.votes = 0;
+        mSongInfo.downvoted = false;
+        mSongInfo.upvoted = false;
+        mSongInfo.saved = false;
+        
+        updateWidget();
+        
+        // Send the entire songinfo object
+        Intent intent = new Intent(ACTION_SONG_INFO_CHANGED);
+        intent.putExtra(KEY_SONG_INFO, mSongInfo);
+        mContext.sendBroadcast(intent);
     }
     
     // Used by the media player for acting when it is prepared
@@ -641,4 +647,3 @@ public class MusicService extends Service {
         }
     };
 }
-
