@@ -137,7 +137,7 @@
             android:gravity="center_vertical"
             android:layout_weight="1"
             android:textColor="#000"
-            android:textSize="20sp" />
+            android:textSize="16sp" />
 
          <TextView
             android:id="@+id/widget_title"
@@ -152,7 +152,7 @@
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:textColor="#000"
-            android:textSize="20sp">
+            android:textSize="16sp">
 
             <requestFocus
                 android:duplicateParentState="true"
@@ -174,7 +174,7 @@
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:textColor="#000"
-            android:textSize="20sp">
+            android:textSize="16sp">
 
             <!-- <requestFocus
                 android:duplicateParentState="true"
