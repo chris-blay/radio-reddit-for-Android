@@ -191,7 +191,7 @@
             android:id="@+id/play"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/actionbar_compat_height"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:src="@drawable/play"
             android:background="@drawable/actionbar_compat_item"
             android:contentDescription="@string/play" />
