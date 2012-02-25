@@ -394,7 +394,7 @@ public class MusicService extends Service {
         editor.commit();
         
         // Inform user the stream has been successfully changed
-        toast(getString(R.string.now_tuned_to) + " " + mStream.name);
+        //toast(getString(R.string.now_tuned_to) + " " + mStream.name);
         
         // Change the notification title to the current stream
         // and drop in some temporary text, will get update when
