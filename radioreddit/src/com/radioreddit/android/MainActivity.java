@@ -123,10 +123,17 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
     };
     
     // Used for the cancel listener in both dialogs
-    private final DialogInterface.OnClickListener mDialogCancelListener = new DialogInterface.OnClickListener() {
+    private final DialogInterface.OnClickListener mTuneDialogCancelListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             dialog.dismiss();
+        }
+    };
+    
+    private final DialogInterface.OnClickListener mInfoDialogCancelListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            removeDialog(DIALOG_INFO);
         }
     };
     
@@ -293,7 +300,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         switch (id) {
         case DIALOG_TUNE:
             builder.setTitle(R.string.tune_dialog_title);
-            builder.setNeutralButton(android.R.string.cancel, mDialogCancelListener);
+            builder.setNeutralButton(android.R.string.cancel, mTuneDialogCancelListener);
             builder.setItems(MusicService.STREAM_NAMES, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -306,7 +313,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
             return builder.create();
         case DIALOG_INFO:
             builder.setTitle(R.string.info_dialog_title);
-            builder.setNeutralButton(android.R.string.ok, mDialogCancelListener);
+            builder.setNeutralButton(android.R.string.ok, mInfoDialogCancelListener);
             builder.setMessage(Html.fromHtml(getString(R.string.info_text)));
             Dialog dialog = builder.create();
             dialog.show();
