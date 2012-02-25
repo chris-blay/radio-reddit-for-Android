@@ -122,7 +122,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         }
     };
     
-    // Used for the cancel listener in both dialogs
+    // Cancel listener for the tune dialog
     private final DialogInterface.OnClickListener mTuneDialogCancelListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
@@ -130,6 +130,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         }
     };
     
+    // Cancel listener for the info dialog. Needs to remove the dialog so it doesn't show up again on rotate
     private final DialogInterface.OnClickListener mInfoDialogCancelListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
