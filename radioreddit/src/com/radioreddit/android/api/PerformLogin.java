@@ -40,6 +40,8 @@ import android.net.ParseException;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.radioreddit.android.MusicService;
+
 public class PerformLogin extends AsyncTask<String, Integer, Boolean> {
     private String mUser;
     private String mModhash;
@@ -55,48 +57,62 @@ public class PerformLogin extends AsyncTask<String, Integer, Boolean> {
         final String username = params[0];
         final String password = params[1];
         
+        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+            return false;
+        }
+        
         // Prepare POST, execute it, parse response as JSON
         JSONObject response = null;
         try {
             final HttpClient httpClient = new DefaultHttpClient();
-            final HttpPost httpPost = new HttpPost("https://ssl.reddit.com/api/login/" + username);
+            final HttpPost httpPost = new HttpPost("https://ssl.reddit.com/api/login");
             final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
             nameValuePairs.add(new BasicNameValuePair("user", username));
             nameValuePairs.add(new BasicNameValuePair("passwd", password));
             nameValuePairs.add(new BasicNameValuePair("api_type", "json"));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            httpPost.setHeader("User-Agent", RedditApi.USER_AGENT);
             final HttpResponse httpResponse = httpClient.execute(httpPost);
-            response = new JSONObject(EntityUtils.toString(httpResponse.getEntity()));
+            final String responseBody = EntityUtils.toString(httpResponse.getEntity());
+            if (MusicService.DEBUG) {
+                Log.i(RedditApi.TAG, "Reddit API login response: " + responseBody);
+            }
+            response = new JSONObject(responseBody);
             response = response.getJSONObject("json");
         } catch (UnsupportedEncodingException e) {
-            Log.i("RedditAPI", "UnsupportedEncodingException while performing login", e);
+            Log.i(RedditApi.TAG, "UnsupportedEncodingException while performing login", e);
+            return false;
         } catch (ClientProtocolException e) {
-            Log.i("RedditAPI", "ClientProtocolException while performing login", e);
+            Log.i(RedditApi.TAG, "ClientProtocolException while performing login", e);
+            return false;
         } catch (IOException e) {
-            Log.i("RedditAPI", "IOException while performing login", e);
+            Log.i(RedditApi.TAG, "IOException while performing login", e);
+            return false;
         } catch (ParseException e) {
-            Log.i("RedditAPI", "ParseException while performing login", e);
+            Log.i(RedditApi.TAG, "ParseException while performing login", e);
+            return false;
         } catch (JSONException e) {
-            Log.i("RedditAPI", "JSONException while performing login", e);
+            Log.i(RedditApi.TAG, "JSONException while performing login", e);
+            return false;
         }
         
         // Check for failure 
         if (response == null) {
-            Log.i("RedditAPI", "Response was null while performing login");
+            Log.i(RedditApi.TAG, "Response was null while performing login");
             return false;
         }
         
         // Check for errors
         final JSONArray errors = response.optJSONArray("errors");
         if (errors == null || errors.length() > 0) {
-            Log.i("RedditAPI", "Response has errors while performing login");
+            Log.i(RedditApi.TAG, "Response has errors while performing login");
             return false;
         }
         
         // Check for data
         final JSONObject data = response.optJSONObject("data");
         if (data == null) {
-            Log.i("RedditAPI", "Response missing data while performing login");
+            Log.i(RedditApi.TAG, "Response missing data while performing login");
             return false;
         }
         
@@ -104,8 +120,8 @@ public class PerformLogin extends AsyncTask<String, Integer, Boolean> {
         mUser = username;
         mModhash = data.optString("modhash");
         mCookie = data.optString("cookie");
-        if (mUser == null || mModhash == null || mCookie == null) {
-            Log.i("RedditAPI", "Response missing modhash/cookie while performing login");
+        if (mModhash.length() == 0 || mCookie.length() == 0) {
+            Log.i(RedditApi.TAG, "Response missing modhash/cookie while performing login");
             return false;
         }
         

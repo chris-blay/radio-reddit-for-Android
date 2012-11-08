@@ -53,16 +53,17 @@ public class PerformSave extends AsyncTask<String, Integer, Void> {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             // Using HttpContext, CookieStore, and friends didn't work
             httpPost.setHeader("Cookie", "reddit_session=" + cookie);
+            httpPost.setHeader("User-Agent", RedditApi.USER_AGENT);
             httpClient.execute(httpPost);
             // We just assume that everything worked so there's no need to check the response
         } catch (UnsupportedEncodingException e) {
-            Log.i("RedditAPI", "UnsupportedEncodingException while performing vote", e);
+            Log.i(RedditApi.TAG, "UnsupportedEncodingException while performing vote", e);
         } catch (ClientProtocolException e) {
-            Log.i("RedditAPI", "ClientProtocolException while performing vote", e);
+            Log.i(RedditApi.TAG, "ClientProtocolException while performing vote", e);
         } catch (IOException e) {
-            Log.i("RedditAPI", "IOException while performing vote", e);
+            Log.i(RedditApi.TAG, "IOException while performing vote", e);
         } catch (ParseException e) {
-            Log.i("RedditAPI", "ParseException while performing vote", e);
+            Log.i(RedditApi.TAG, "ParseException while performing vote", e);
         }
         
         return null;

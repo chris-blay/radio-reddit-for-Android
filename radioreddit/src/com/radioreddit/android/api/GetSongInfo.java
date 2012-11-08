@@ -67,30 +67,31 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
                 // Using HttpContext, CookieStore, and friends didn't work
                 httpGet.setHeader("Cookie", "reddit_session=" + cookie);
             }
-            HttpResponse httpResponse = httpClient.execute(httpGet);
+            httpGet.setHeader("User-Agent", RedditApi.USER_AGENT);
+            final HttpResponse httpResponse = httpClient.execute(httpGet);
             response = new JSONObject(EntityUtils.toString(httpResponse.getEntity()));
         } catch (UnsupportedEncodingException e) {
-            Log.i("RedditAPI", "UnsupportedEncodingException while getting song info", e);
+            Log.i(RedditApi.TAG, "UnsupportedEncodingException while getting song info", e);
         } catch (ClientProtocolException e) {
-            Log.i("RedditAPI", "ClientProtocolException while getting song info", e);
+            Log.i(RedditApi.TAG, "ClientProtocolException while getting song info", e);
         } catch (IOException e) {
-            Log.i("RedditAPI", "IOException while getting song info", e);
+            Log.i(RedditApi.TAG, "IOException while getting song info", e);
         } catch (ParseException e) {
-            Log.i("RedditAPI", "ParseException while getting song info", e);
+            Log.i(RedditApi.TAG, "ParseException while getting song info", e);
         } catch (JSONException e) {
-            Log.i("RedditAPI", "JSONException while getting song info", e);
+            Log.i(RedditApi.TAG, "JSONException while getting song info", e);
         }
         
         // Check for failure
         if (response == null) {
-            Log.i("RedditAPI", "Response is null");
+            Log.i(RedditApi.TAG, "Response is null");
             return false;
         }
         
         // Get the info we want
         final JSONObject data1 = response.optJSONObject("data");
         if (data1 == null) {
-            Log.i("RedditAPI", "First data is null");
+            Log.i(RedditApi.TAG, "First data is null");
             return false;
         }
         final String modhash = data1.optString("modhash", "");
@@ -99,7 +100,7 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
         }
         final JSONArray children = data1.optJSONArray("children");
         if (children == null) {
-            Log.i("RedditAPI", "Children is null");
+            Log.i(RedditApi.TAG, "Children is null");
             return false;
         }
         final JSONObject child = children.optJSONObject(0);
@@ -110,17 +111,17 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
         }
         final String kind = child.optString("kind");
         if (kind == null) {
-            Log.i("RedditAPI", "Kind is null");
+            Log.i(RedditApi.TAG, "Kind is null");
             return false;
         }
         final JSONObject data2 = child.optJSONObject("data");
         if (data2 == null) {
-            Log.i("RedditAPI", "Second data is null");
+            Log.i(RedditApi.TAG, "Second data is null");
             return false;
         }
         final String id = data2.optString("id");
         if (id == null) {
-            Log.i("RedditAPI", "Id is null");
+            Log.i(RedditApi.TAG, "Id is null");
             return false;
         }
         final int score = data2.optInt("score");

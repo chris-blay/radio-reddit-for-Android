@@ -22,6 +22,9 @@ import com.radioreddit.android.AllSongInfo;
 import com.radioreddit.android.MusicService;
 
 public class RedditApi {
+    public static final String TAG = "RedditApi";
+    public static final String USER_AGENT = "radio reddit for android 6";
+    
     private static final String VOTE_UP = "1";
     private static final String VOTE_RECIND = "0";
     private static final String VOTE_DOWN = "-1";

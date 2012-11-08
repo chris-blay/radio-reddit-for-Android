@@ -50,20 +50,21 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class MusicService extends Service {
-    private static final String TAG = "radio reddit - music service";
-    private static final boolean DEBUG = false;
+    public static final boolean DEBUG = false;
+    private static final String TAG = "MusicService";
     
     private static final int NOTIFICATION = R.string.playing_music;
     
+    // TODO: Figure out how to load all this information when the app starts up
     private static final Stream[] STREAMS = {
-        new Stream("Main", "/api/", new Relay[] {new Relay("main.radioreddit.com:8080")}),
-        new Stream("Electronic", "/api/electronic/", new Relay[] {new Relay("electronic.radioreddit.com:8080")}),
-        new Stream("Rock", "/api/rock/", new Relay[] {new Relay("rock.radioreddit.com:8080")}),
-        new Stream("Metal", "/api/metal/", new Relay[] {new Relay("texas.radioreddit.com:8090")}),
-        new Stream("Indie", "/api/indie/", new Relay[] {new Relay("indie.radioreddit.com:8080")}),
-        new Stream("Hip Hop", "/api/hiphop/", new Relay[] {new Relay("hiphop.radioreddit.com:8080")}),
-        new Stream("Random", "/api/random/", new Relay[] {new Relay("random.radioreddit.com:8080")}),
-        new Stream("Talk", "/api/talk/", new Relay[] {new Relay("talk.radioreddit.com:8080")}),
+        new Stream("Main", "/api/", new Relay[] {new Relay("206.217.137.122:8000")}),
+        new Stream("Electronic", "/api/electronic/", new Relay[] {new Relay("206.217.137.122:8010")}),
+        new Stream("Rock", "/api/rock/", new Relay[] {new Relay("206.217.137.122:8020")}),
+        new Stream("Metal", "/api/metal/", new Relay[] {new Relay("206.217.137.122:8090")}),
+        new Stream("Indie", "/api/indie/", new Relay[] {new Relay("206.217.137.122:8070")}),
+        new Stream("Hip Hop", "/api/hiphop/", new Relay[] {new Relay("206.217.137.122:8040")}),
+        new Stream("Random", "/api/random/", new Relay[] {new Relay("206.217.137.122:8050")}),
+        new Stream("Talk", "/api/talk/", new Relay[] {new Relay("206.217.137.122:8060")}),
     };
     
     public static final CharSequence[] STREAM_NAMES = {
@@ -506,6 +507,9 @@ public class MusicService extends Service {
     
     // Have remote object save validated login credentials
     public void login(String username, String modhash, String cookie) {
+        if (DEBUG) {
+            Log.i(TAG, String.format("Setting login info: username=%s modhash=%s cookie=%s", username, modhash, cookie));
+        }
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putString(PREF_USER, username);
         editor.putString(PREF_MODHASH, modhash);

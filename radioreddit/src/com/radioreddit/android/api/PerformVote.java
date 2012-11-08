@@ -26,14 +26,18 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.net.ParseException;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.radioreddit.android.MusicService;
 
 public class PerformVote extends AsyncTask<String, Integer, Void> {
     @Override
@@ -42,6 +46,10 @@ public class PerformVote extends AsyncTask<String, Integer, Void> {
         final String cookie = params[1];
         final String id = params[2];
         final String dir = params[3];
+        
+        if (MusicService.DEBUG) {
+            Log.i(RedditApi.TAG, String.format("PerformVote args: modhash=%s cookie=%s id=%s dir=%s", modhash, cookie, id, dir));
+        }
         
         // Prepare POST with cookie and execute it
         try {
@@ -53,17 +61,26 @@ public class PerformVote extends AsyncTask<String, Integer, Void> {
             nameValuePairs.add(new BasicNameValuePair("uh", modhash));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             // Using HttpContext, CookieStore, and friends didn't work
-            httpPost.setHeader("Cookie", "reddit_session=" + cookie);
-            httpClient.execute(httpPost);
-            // We just assume that everything worked so there's no need to check the response
+            httpPost.setHeader("Cookie", String.format("reddit_session=\"%s\"", cookie));
+            httpPost.setHeader("User-Agent", RedditApi.USER_AGENT);
+            if (MusicService.DEBUG) { 
+                // Do some extra work when debugging to print the response
+                final ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                final String response = httpClient.execute(httpPost, responseHandler);
+                Log.i(RedditApi.TAG, "Reddit vote response: " + response);
+            } else {
+                // Otherwise just assume everything works out for now
+                // TODO: Check for error responses and inform user of the problem
+                httpClient.execute(httpPost);
+            }
         } catch (UnsupportedEncodingException e) {
-            Log.i("RedditAPI", "UnsupportedEncodingException while performing vote", e);
+            Log.i(RedditApi.TAG, "UnsupportedEncodingException while performing vote", e);
         } catch (ClientProtocolException e) {
-            Log.i("RedditAPI", "ClientProtocolException while performing vote", e);
+            Log.i(RedditApi.TAG, "ClientProtocolException while performing vote", e);
         } catch (IOException e) {
-            Log.i("RedditAPI", "IOException while performing vote", e);
+            Log.i(RedditApi.TAG, "IOException while performing vote", e);
         } catch (ParseException e) {
-            Log.i("RedditAPI", "ParseException while performing vote", e);
+            Log.i(RedditApi.TAG, "ParseException while performing vote", e);
         }
         
         return null;
