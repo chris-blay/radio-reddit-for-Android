@@ -1,6 +1,23 @@
 radio reddit for Android
 ========================
 
+PLEASE NOTE
+-----------
+This application has received little to no love from me or anyone
+else since first launching. I unpublished it from the Google Play Store
+on 9 August 2014. The most recent APK can still be downloaded here but
+probably doesn't work anymore.
+
+This was the very first native radio reddit client for Android but there
+are many options to choose from now - all much better than this. It's
+possible some other clients have integrated parts of this code (yay open
+source!) as well so overall I'm pretty happy with how things turned out.
+
+Last thing. I'm still totally cool with accepting pull requests from anyone
+out there looking to revive this app. You would be added to AUTHORS
+and get a shout-out within the app as well. I'm happy to republish
+on the Play Store if/when it's in working condition once again.
+
 About
 -----
 A simple radio reddit client for Android based in part on the ActionBar
