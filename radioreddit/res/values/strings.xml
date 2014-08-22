@@ -49,7 +49,21 @@
     <string name="info_redditor">redditor</string>
     <string name="info_playlist">playlist</string>
 
-    <string name="info_text"><![CDATA[version 0.5<br><br><a href="http://radioreddit.com/?q=sponsor">please donate to radio reddit!</a><br><br>current authors are <a href="mailto:chris.b.blay@gmail.com">christopher blay</a> and <a href="mailto:armakaryk@gmail.com">alexander makaryk</a>. created by <a href="mailto:chris.b.blay@gmail.com">christopher blay</a> and <a href="mailto:danmorwood@gmail.com">daniel morwood</a><br><br>portions of this app are licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0">apache 2.0</a>, specifically <a href="http://code.google.com/p/google-gson/">gson</a> and the <a href="http://developer.android.com/resources/samples/ActionBarCompat/index.html">action bar compatibility</a>. nearly everything else is licensed under the <a href="http://www.gnu.org/licenses/gpl.txt">GNU GPL v3</a><br><br>special thanks to the <a href="http://tango.freedesktop.org/">tango project</a>, <a href="http://www.reddit.com/">reddit</a>, and <a href="http://radioreddit.com/">radio reddit</a>]]></string>
+    <string name="info_text"><![CDATA[
+        version 0.5<br><br>
+        <a href="http://radioreddit.com/?q=sponsor">please donate to radio reddit!</a><br><br>
+        brought to you by
+            <a href="mailto:chris.b.blay@gmail.com">christopher blay</a>,
+            gregory saint-jean,
+            <a href="mailto:armakaryk@gmail.com">alexander makaryk</a>, and
+            <a href="mailto:danmorwood@gmail.com">daniel morwood</a><br><br>
+        portions of this app are licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0">apache 2.0</a>,
+            specifically <a href="http://code.google.com/p/google-gson/">gson</a> and the
+            <a href="http://developer.android.com/resources/samples/ActionBarCompat/index.html">action bar compatibility</a>.
+            nearly everything else is licensed under the <a href="http://www.gnu.org/licenses/gpl.txt">GNU GPL v3</a><br><br>
+        special thanks to <a href="http://radioreddit.com/">radio reddit</a>, <a href="http://www.reddit.com/">reddit</a>,
+            and the <a href="http://tango.freedesktop.org/">tango project</a>
+    ]]></string>
 
     <string name="no_internet">can\'t connect to radio reddit :(</string>
     <string name="not_submitted">this song hasn\'t been submitted to reddit yet</string>
