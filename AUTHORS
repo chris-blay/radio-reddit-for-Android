@@ -9,18 +9,21 @@ versions of Android.
 
 Christopher Blay <chris.b.blay@gmail.com>
 -----------------------------------------
-One of the two members who worked on the initial release. Currently project
-manager and active in development.
+One of the two members who worked on the initial release.
+Currently project manager.
 
-Daniel Morwood <danmorwood@gmail.com>
--------------------------------------
-One of the two members who worked on the initial release. Not currently active
-in development.
+Gregory Saint-Jean
+------------------
+Contributed fixes to the streaming relays.
 
 Alexander Makaryk <armakaryk@gmail.com>
 ---------------------------------------
-Currently involved with development since code was open sourced. Contributed
-code to stop/play automatically when phone is in use.
+Contributed code for homescreen widgets and to
+stop/play automatically when phone is in use.
+
+Daniel Morwood <danmorwood@gmail.com>
+-------------------------------------
+One of the two members who worked on the initial release.
 
 You!?
 -----
