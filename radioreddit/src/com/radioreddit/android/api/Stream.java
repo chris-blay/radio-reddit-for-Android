@@ -21,12 +21,10 @@ package com.radioreddit.android.api;
 public class Stream {
     public String name;
     public String status;
-    public Relay[] relays;
     
-    public Stream(String name, String status, Relay[] relays) {
+    public Stream(String name, String status) {
         this.name = name;
         this.status = status;
-        this.relays = relays;
     }
     
     @Override

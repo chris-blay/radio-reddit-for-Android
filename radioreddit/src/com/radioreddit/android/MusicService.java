@@ -22,10 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.radioreddit.android.api.RedditApi;
-import com.radioreddit.android.api.Relay;
-import com.radioreddit.android.api.Stream;
-
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -49,6 +45,12 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.radioreddit.android.api.GetStationStatus;
+import com.radioreddit.android.api.RedditApi;
+import com.radioreddit.android.api.Relay;
+import com.radioreddit.android.api.StationStatus;
+import com.radioreddit.android.api.Stream;
+
 public class MusicService extends Service {
     public static final boolean DEBUG = false;
     private static final String TAG = "MusicService";
@@ -57,14 +59,14 @@ public class MusicService extends Service {
     
     // TODO: Figure out how to load all this information when the app starts up
     private static final Stream[] STREAMS = {
-        new Stream("Main", "/api/", new Relay[] {new Relay("cdn.audiopump.co/radioreddit/main_mp3_128k")}),
-        new Stream("Electronic", "/api/electronic/", new Relay[] {new Relay("cdn.audiopump.co/radioreddit/electronic_mp3_128k")}),
-        new Stream("Rock", "/api/rock/", new Relay[] {new Relay("cdn.audiopump.co/radioreddit/rock_mp3_128k")}),
-        new Stream("Metal", "/api/metal/", new Relay[] {new Relay("cdn.audiopump.co/radioreddit/metal_mp3_128k")}),
-        new Stream("Indie", "/api/indie/", new Relay[] {new Relay("cdn.audiopump.co/radioreddit/indie_mp3_128k")}),
-        new Stream("Hip Hop", "/api/hiphop/", new Relay[] {new Relay("cdn.audiopump.co/radioreddit/hiphop_mp3_128k")}),
-        new Stream("Random", "/api/random/", new Relay[] {new Relay("cdn.audiopump.co/radioreddit/random_mp3_128k")}),
-        new Stream("Talk", "/api/talk/", new Relay[] {new Relay("cdn.audiopump.co/radioreddit/talk_mp3_128k")}),
+        new Stream("Main", "/api/"),
+        new Stream("Electronic", "/api/electronic/"),
+        new Stream("Rock", "/api/rock/"),
+        new Stream("Metal", "/api/metal/"),
+        new Stream("Indie", "/api/indie/"),
+        new Stream("Hip Hop", "/api/hiphop/"),
+        new Stream("Random", "/api/random/"),
+        new Stream("Talk", "/api/talk/"),
     };
     
     public static final CharSequence[] STREAM_NAMES = {
@@ -296,6 +298,24 @@ public class MusicService extends Service {
         return mBinder;
     }
     
+    class GrabStationStatus extends GetStationStatus{
+
+		public GrabStationStatus() {
+			super(MusicService.this, null);
+		}
+
+		@Override
+		protected void onPostExecute(StationStatus result) {
+			if(result == null){
+				return;
+			}
+			
+			mStreamUrl = result.relay;
+			play();
+		}
+    	
+    }
+    
     // Only called by the phone state listener if we need to resume play
     private void play() {
         if (mStreamUrl != null) {
@@ -365,7 +385,7 @@ public class MusicService extends Service {
             if (isPlaying()) {
                 stop();
             } else {
-                play("http://" + mStream.relays[0].server);
+            	new GrabStationStatus().execute("http://www.radioreddit.com" + mStream.status + "status.json");
             }
             break;
         case CMD_CHANGE_STREAM:
@@ -386,7 +406,7 @@ public class MusicService extends Service {
         // Set the current station and begin playback if already playing
         mStream = STREAMS[streamId];
         if (isPlaying()) {
-            play("http://" + mStream.relays[0].server);
+        	new GrabStationStatus().execute("http://www.radioreddit.com" + mStream.status + "status.json");
         }
         
         // Save streamId for future reference
