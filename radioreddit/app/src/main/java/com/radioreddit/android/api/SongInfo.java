@@ -19,13 +19,13 @@
 package com.radioreddit.android.api;
 
 public class SongInfo {
-	public String id;
-	public String title;
-	public String artist;
-	public String redditor;
-	public String genre;
-	public String reddit_title;
-	public String reddit_url;
-	public String preview_url;
-	public String download_url;
+    public String id;
+    public String title;
+    public String artist;
+    public String redditor;
+    public String genre;
+    public String reddit_title;
+    public String reddit_url;
+    public String preview_url;
+    public String download_url;
 }

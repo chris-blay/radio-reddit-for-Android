@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -38,42 +37,40 @@ public class LoginActivity extends ActionBarActivity implements LoginResultCallb
     private Context mContext;
     private EditText mUsername;
     private EditText mPassword;
-    private Button mLogin;
     private MusicService mService;
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mService = ((MusicService.MusicBinder) service).getService();
         }
-        
+
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mService = null;
         }
     };
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        
+
         mContext = getApplicationContext();
         mUsername = (EditText) findViewById(R.id.username);
         mPassword = (EditText) findViewById(R.id.password);
-        mLogin = (Button) findViewById(R.id.login);
-        
+
         bindService(new Intent(mContext, MusicService.class), mConnection, Context.BIND_AUTO_CREATE);
-        
-        mLogin.setOnClickListener(new View.OnClickListener() {
+
+        findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 login();
             }
         });
-        
+
         setDisplayHomeAsUpEnabled(true);
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -81,7 +78,7 @@ public class LoginActivity extends ActionBarActivity implements LoginResultCallb
             unbindService(mConnection);
         }
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -92,12 +89,12 @@ public class LoginActivity extends ActionBarActivity implements LoginResultCallb
         }
         return super.onOptionsItemSelected(item);
     }
-    
+
     private void login() {
         // Get username/password
         final String username = mUsername.getText().toString();
         final String password = mPassword.getText().toString();
-        
+
         // Check username/password
         if (username.length() == 0) {
             toast(R.string.no_username);
@@ -107,10 +104,10 @@ public class LoginActivity extends ActionBarActivity implements LoginResultCallb
             toast(R.string.no_password);
             return;
         }
-        
+
         RedditApi.requestLogin(this, username, password);
     }
-    
+
     @Override
     public void onLoginResult(boolean success, String username, String modhash, String cookie) {
         if (success) {
@@ -120,9 +117,8 @@ public class LoginActivity extends ActionBarActivity implements LoginResultCallb
            toast(R.string.bad_login);
         }
     }
-    
+
     private void toast(int resId) {
         Toast.makeText(mContext, resId, Toast.LENGTH_SHORT).show();
     }
 }
-

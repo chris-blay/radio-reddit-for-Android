@@ -18,10 +18,12 @@
 
 package com.radioreddit.android.api;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import android.net.ParseException;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.radioreddit.android.AllSongInfo;
+import com.radioreddit.android.MusicService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -36,31 +38,29 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.net.ParseException;
-import android.os.AsyncTask;
-import android.util.Log;
-
-import com.radioreddit.android.AllSongInfo;
-import com.radioreddit.android.MusicService;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
     private AllSongInfo mSong;
-    
+
     private MusicService mService;
     public GetSongInfo(MusicService service, AllSongInfo song) {
         mService = service;
         mSong = song;
     }
-    
+
     @Override
     protected Boolean doInBackground(String... params) {
         final String cookie = params[0]; // This will be null if not logged in
-        
+
         // Prepare GET with cookie, execute it, parse response as JSON
         JSONObject response = null;
         try {
             final HttpClient httpClient = new DefaultHttpClient();
-            final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            final List<NameValuePair> nameValuePairs = new ArrayList<>();
             nameValuePairs.add(new BasicNameValuePair("url", mSong.reddit_url));
             final HttpGet httpGet = new HttpGet("http://www.reddit.com/api/info.json?" + URLEncodedUtils.format(nameValuePairs, "utf-8"));
             if (cookie != null) {
@@ -81,13 +81,13 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
         } catch (JSONException e) {
             Log.i(RedditApi.TAG, "JSONException while getting song info", e);
         }
-        
+
         // Check for failure
         if (response == null) {
             Log.i(RedditApi.TAG, "Response is null");
             return false;
         }
-        
+
         // Get the info we want
         final JSONObject data1 = response.optJSONObject("data");
         if (data1 == null) {
@@ -125,26 +125,22 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
             return false;
         }
         final int score = data2.optInt("score");
-        Boolean likes = null; 
+        Boolean likes = null;
         if (!data2.isNull("likes")) {
             likes = data2.optBoolean("likes");
         }
         final boolean saved = data2.optBoolean("saved");
-        
+
         // Modify song with collected info
-        if (kind != null && id != null) {
-            mSong.reddit_id = kind + "_" + id;
-        } else {
-            mSong.reddit_id = null;
-        }
-        mSong.upvoted = (likes != null && likes == true);
-        mSong.downvoted = (likes != null && likes == false);
+        mSong.reddit_id = kind + "_" + id;
+        mSong.upvoted = (likes != null && likes);
+        mSong.downvoted = (likes != null && !likes);
         mSong.votes = score;
         mSong.saved = saved;
-        
+
         return true;
     }
-    
+
     @Override
     protected void onPostExecute(Boolean success) {
         if (!success) {
@@ -158,4 +154,3 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
         mService.onSongInfoChanged(mSong);
     }
 }
-

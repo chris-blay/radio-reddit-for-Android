@@ -18,10 +18,6 @@
 
 package com.radioreddit.android.api;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
@@ -30,24 +26,28 @@ import com.radioreddit.android.AllSongInfo;
 import com.radioreddit.android.MusicService;
 import com.radioreddit.android.R;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
 public class GetStationStatus extends AsyncTask<String, Integer, StationStatus> {
     private String mCookie;
-    
+
     private MusicService mService;
     public GetStationStatus(MusicService service, String cookie) {
         mService = service;
         mCookie = cookie;
     }
-    
+
     @Override
     protected StationStatus doInBackground(String... params) {
         InputStream source = InternetCommunication.retrieveStream(params[0]);
-        
+
         if (source == null) {
             // No Internet connection
             return null;
         }
-        
+
         Reader reader = new InputStreamReader(source);
         Gson gson = new Gson();
         // Wrap in try/catch in case there is a parse error
@@ -57,17 +57,19 @@ public class GetStationStatus extends AsyncTask<String, Integer, StationStatus> 
             return null;
         }
     }
-    
+
     @Override
     protected void onPostExecute(StationStatus result) {
         if (result == null) {
             return;
         }
-        
+
         // XXX: Work-around for the talk stream. I guess it uses episodes instead?
-        final StationStatus status = result;
         SongInfo currentSong;
-        if (status.songs == null || status.songs.song == null || status.songs.song.isEmpty()) {
+        if (result.songs == null
+                || result.songs.song == null
+                || result.songs.song.isEmpty()
+                || result.songs.song.get(0) == null) {
             final String filler = mService.getString(R.string.info_filler);
             currentSong = new SongInfo();
             currentSong.title = filler;
@@ -75,22 +77,21 @@ public class GetStationStatus extends AsyncTask<String, Integer, StationStatus> 
             currentSong.genre = filler;
             currentSong.redditor = filler;
         } else {
-            currentSong = status.songs.song.get(0);
+            currentSong = result.songs.song.get(0);
         }
-        
-        // Copy the info we want to display to a new object 
+
+        // Copy the info we want to display to a new object
         final AllSongInfo song = new AllSongInfo();
         song.title = currentSong.title;
         song.artist = currentSong.artist;
         song.genre = currentSong.genre;
         song.redditor = currentSong.redditor;
-        song.playlist = status.playlist;
+        song.playlist = result.playlist;
         song.reddit_url = currentSong.reddit_url;
-        
+
         // Not all the information we need is available yet. We need to make
         // a request to reddit to get vote/save info for this song before
         // sending back to the main activity
         new GetSongInfo(mService, song).execute(mCookie);
     }
 }
-

@@ -24,22 +24,22 @@ import com.radioreddit.android.MusicService;
 public class RedditApi {
     public static final String TAG = "RedditApi";
     public static final String USER_AGENT = "radio reddit for android 6";
-    
+
     private static final String VOTE_UP = "1";
     private static final String VOTE_RECIND = "0";
     private static final String VOTE_DOWN = "-1";
-    
+
     private static final String SAVE = "save";
     private static final String UNSAVE = "unsave";
-    
+
     public static void requestLogin(LoginResultCallback callback, String username, String password) {
         new PerformLogin(callback).execute(username, password);
     }
-    
+
     public static void requestSongInfo(MusicService service, String cookie, String url) {
         new GetStationStatus(service, cookie).execute(url);
     }
-    
+
     public static AllSongInfo toggleUpvote(String modhash, String cookie, AllSongInfo info) {
         if (info.downvoted) {
             info.downvoted = false;
@@ -55,7 +55,7 @@ public class RedditApi {
         }
         return info;
     }
-    
+
     public static AllSongInfo toggleDownvote(String modhash, String cookie, AllSongInfo info) {
         if (info.upvoted) {
             info.upvoted = false;
@@ -71,7 +71,7 @@ public class RedditApi {
         }
         return info;
     }
-    
+
     public static AllSongInfo toggleSave(String modhash, String cookie, AllSongInfo info) {
         if (info.saved) {
             info.saved = false;
@@ -83,4 +83,3 @@ public class RedditApi {
         return info;
     }
 }
-

@@ -40,27 +40,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.radioreddit.android.actionbarcompat.ActionBarActivity;
 
 public class MainActivity extends ActionBarActivity implements PlaystateChangedListener {
     private static final String TAG = "MainActivty";
     private static final boolean DEBUG = false;
-    
-    // Used for preference names
-    public static final String PREF_STREAM = "stream";
-    public static final String PREF_USER = "user";
-    public static final String PREF_MODHASH = "modhash";
-    public static final String PREF_COOKIE = "cookie";
-    
+
     // Used for displaying dialogs
     private static final int DIALOG_TUNE = 1;
     private static final int DIALOG_INFO = 2;
-    
+
     private Context mContext;
     private Resources mResources;
-    
+
     private TextView mNoInternet;
     private ImageButton mUpvote;
     private TextView mVotes;
@@ -73,9 +66,8 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
     private TextView mPlaylist;
     private ImageButton mSave;
     private ImageButton mPlay;
-    private ImageButton mInfo;
-    
-    // Connection stuff for the music playing service 
+
+    // Connection stuff for the music playing service
     private MusicService mService;
     private final ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -88,40 +80,39 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
             mService = null;
         }
     };
-    
+
     private BroadcastReceiver mBackendReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (action.equals(MusicService.ACTION_SONG_INFO_CHANGED)) {
+            switch (intent.getAction()) {
+            case MusicService.ACTION_SONG_INFO_CHANGED:
                 if (DEBUG) {
                     Log.d(TAG, "++Song Info Intent Received++");
                 }
-                final AllSongInfo songinfo = intent.getParcelableExtra(MusicService.KEY_SONG_INFO);
-                displaySongInfo(songinfo);
-            } else if (action.equals(MusicService.ACTION_STATION_CHANGED)) {
+                displaySongInfo((AllSongInfo) intent.getParcelableExtra(MusicService.KEY_SONG_INFO));
+                break;
+            case MusicService.ACTION_STATION_CHANGED:
                 if (DEBUG) {
                     Log.d(TAG, "++Station Change Intent Received++");
                 }
-                final String streamname = intent.getExtras().getString(MusicService.KEY_STREAM_NAME);
-                mSongStream.setText(streamname);
-            } else if (action.equals(MusicService.ACTION_REQUEST_UPDATE)) {
+                mSongStream.setText(intent.getExtras().getString(MusicService.KEY_STREAM_NAME));
+                break;
+            case MusicService.ACTION_REQUEST_UPDATE:
                 if (this.getResultCode() == Activity.RESULT_OK) {
                     if (DEBUG) {
                         Log.d(TAG, "++Update Intent Received Ok++");
                     }
                     final Bundle bundle = this.getResultExtras(false);
                     if (bundle != null) {
-                        final AllSongInfo songinfo = bundle.getParcelable(MusicService.KEY_SONG_INFO);
-                        final String streamname = bundle.getString(MusicService.KEY_STREAM_NAME);
-                        displaySongInfo(songinfo);
-                        mSongStream.setText(streamname);
+                        displaySongInfo((AllSongInfo) bundle.getParcelable(MusicService.KEY_SONG_INFO));
+                        mSongStream.setText(bundle.getString(MusicService.KEY_STREAM_NAME));
                     }
                 }
+                break;
             }
         }
     };
-    
+
     // Cancel listener for the tune dialog
     private final DialogInterface.OnClickListener mTuneDialogCancelListener = new DialogInterface.OnClickListener() {
         @Override
@@ -129,7 +120,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
             dialog.dismiss();
         }
     };
-    
+
     // Cancel listener for the info dialog. Needs to remove the dialog so it doesn't show up again on rotate
     private final DialogInterface.OnClickListener mInfoDialogCancelListener = new DialogInterface.OnClickListener() {
         @Override
@@ -137,16 +128,16 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
             removeDialog(DIALOG_INFO);
         }
     };
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (DEBUG) {
             Log.d(TAG, "++onCreate++");
         }
-        
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
+
         // Initialize member variables
         mContext = getApplicationContext();
         mResources = getResources();
@@ -162,8 +153,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         mPlaylist = (TextView) findViewById(R.id.playlist);
         mSave = (ImageButton) findViewById(R.id.save);
         mPlay = (ImageButton) findViewById(R.id.play);
-        mInfo = (ImageButton) findViewById(R.id.info);
-        
+
         // Setup actions for button clicks
         mUpvote.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,17 +179,17 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
                 togglePlay();
             }
         });
-        mInfo.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.info).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDialog(DIALOG_INFO);
             }
         });
-        
+
         // Start the music playing service this allows the service to continue after the application has lost focus
         startService(new Intent(mContext, MusicService.class));
     }
-    
+
     @Override
     protected void onStart() {
         if (DEBUG) {
@@ -208,7 +198,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         super.onStart();
         bindService(new Intent(mContext, MusicService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
-    
+
     @Override
     public void onResume() {
         if (DEBUG) {
@@ -220,7 +210,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         filter.addAction(MusicService.ACTION_STATION_CHANGED);
         filter.addAction(MusicService.ACTION_REQUEST_UPDATE);
         registerReceiver(mBackendReceiver, filter);
-        
+
         // Send a loopback call to the service for the most up to date data.
         final Intent intent = new Intent(MusicService.ACTION_REQUEST_UPDATE);
         mContext.sendOrderedBroadcast(intent, null, mBackendReceiver, null, Activity.RESULT_FIRST_USER, null, null);
@@ -234,32 +224,32 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         super.onPause();
         unregisterReceiver(mBackendReceiver);
     }
-    
+
     @Override
     public void onDestroy() {
         if (DEBUG) {
             Log.d(TAG, "++OnDestroy++");
         }
         super.onDestroy();
-        
+
         // Disconnect from the music playing service if it is connected
         if (mService != null) {
             unbindService(mConnection);
         }
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
-    
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem loginItem = menu.findItem(R.id.menu_login);
         MenuItem logoutItem = menu.findItem(R.id.menu_logout);
-        
+
         // Changes the visibility of login/logout items depending on the login
         //  state. On Version 11+ invalidateOptionMenu() will need to be called
         //  from login() and logout() to update the menuitems in the actionbar
@@ -274,7 +264,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         }
         return super.onPrepareOptionsMenu(menu);
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -293,7 +283,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         }
         return super.onOptionsItemSelected(item);
     }
-    
+
     @Override
     protected Dialog onCreateDialog(int id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -323,7 +313,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         }
         return null;
     }
-    
+
     // Called only after the song info changes
     public void displaySongInfo(AllSongInfo songInfo) {
         mNoInternet.setVisibility(View.GONE);
@@ -334,7 +324,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         mPlaylist.setText(songInfo.playlist);
         displayStatus(songInfo);
     }
-    
+
     private void displayStatus(AllSongInfo songinfo) {
         mVotes.setText(String.valueOf(songinfo.votes));
         if (songinfo.upvoted) {
@@ -356,7 +346,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
             mSave.setImageResource(R.drawable.star_off);
         }
     }
-    
+
     // Tells the service to toggle the upvote on the currently playing track
     private void toggleUpvote() {
         if (!mService.loggedIn()) {
@@ -367,7 +357,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
             sendBroadcast(cmdUpvote);
         }
     }
-    
+
     // Tells the service to toggle the downvote on the currently playing track
     private void toggleDownvote() {
         if (!mService.loggedIn()) {
@@ -378,7 +368,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
             sendBroadcast(cmdDownvote);
         }
     }
-    
+
     // Tells the service to toggle the save state of the current track
     private void toggleSave() {
         if (!mService.loggedIn()) {
@@ -389,13 +379,13 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
             sendBroadcast(cmdSave);
         }
     }
-    
+
     private void togglePlay() {
         Intent togglePlayIntent = new Intent(MusicService.ACTION_PLAYER_COMMAND);
         togglePlayIntent.putExtra(MusicService.KEY_COMMAND, MusicService.CMD_TOGGLE_PLAY);
         sendBroadcast(togglePlayIntent);
     }
-    
+
     // Called by the backend service whenever the stream starts or stops playing
     public void onPlaystateChanged(boolean isPlaying) {
         if (isPlaying) {
@@ -404,23 +394,15 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
             mPlay.setImageResource(R.drawable.play);
         }
     }
-    
+
     private void login() {
         startActivity(new Intent(mContext, LoginActivity.class));
     }
-    
+
     private void logout() {
         if (mService != null) {
             mService.logout();
         }
     }
-    
-    public void toast(int resId) {
-        Toast.makeText(mContext, resId, Toast.LENGTH_SHORT).show();
-    }
-    
-    public void toast(String text) {
-        Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
-    }
-}
 
+}
