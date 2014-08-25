@@ -19,10 +19,10 @@
 package com.radioreddit.android.api;
 
 public class StationStatus {
-	public String online;
-	public String relay;
-	public String listeners;
-	public String all_listeners;
-	public String playlist;
-	public SongInfoList songs;
+    public String online;
+    public String relay;
+    public String listeners;
+    public String all_listeners;
+    public String playlist;
+    public SongInfoList songs;
 }

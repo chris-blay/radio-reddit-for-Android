@@ -21,4 +21,3 @@ package com.radioreddit.android.api;
 public interface LoginResultCallback {
     public void onLoginResult(boolean success, String username, String modhash, String cookie);
 }
-

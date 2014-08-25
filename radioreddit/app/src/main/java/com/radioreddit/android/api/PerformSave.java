@@ -18,10 +18,9 @@
 
 package com.radioreddit.android.api;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import android.net.ParseException;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -31,9 +30,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
-import android.net.ParseException;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PerformSave extends AsyncTask<String, Integer, Void> {
     @Override
@@ -42,12 +42,12 @@ public class PerformSave extends AsyncTask<String, Integer, Void> {
         final String cookie = params[1];
         final String id = params[2];
         final String type = params[3];
-        
+
         // Prepare POST with cookie and execute it
         try {
             final HttpClient httpClient = new DefaultHttpClient();
             final HttpPost httpPost = new HttpPost("http://www.reddit.com/api/" + type);
-            final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            final List<NameValuePair> nameValuePairs = new ArrayList<>();
             nameValuePairs.add(new BasicNameValuePair("id", id));
             nameValuePairs.add(new BasicNameValuePair("uh", modhash));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -65,10 +65,10 @@ public class PerformSave extends AsyncTask<String, Integer, Void> {
         } catch (ParseException e) {
             Log.i(RedditApi.TAG, "ParseException while performing vote", e);
         }
-        
+
         return null;
     }
-    
+
     @Override
     protected void onPostExecute(Void unused) {
         // This method intentionally does nothing

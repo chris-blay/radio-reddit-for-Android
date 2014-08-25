@@ -18,10 +18,11 @@
 
 package com.radioreddit.android.api;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import android.net.ParseException;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.radioreddit.android.MusicService;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -33,11 +34,10 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
-import android.net.ParseException;
-import android.os.AsyncTask;
-import android.util.Log;
-
-import com.radioreddit.android.MusicService;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PerformVote extends AsyncTask<String, Integer, Void> {
     @Override
@@ -46,16 +46,16 @@ public class PerformVote extends AsyncTask<String, Integer, Void> {
         final String cookie = params[1];
         final String id = params[2];
         final String dir = params[3];
-        
+
         if (MusicService.DEBUG) {
             Log.i(RedditApi.TAG, String.format("PerformVote args: modhash=%s cookie=%s id=%s dir=%s", modhash, cookie, id, dir));
         }
-        
+
         // Prepare POST with cookie and execute it
         try {
             final HttpClient httpClient = new DefaultHttpClient();
             final HttpPost httpPost = new HttpPost("http://www.reddit.com/api/vote");
-            final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            final List<NameValuePair> nameValuePairs = new ArrayList<>();
             nameValuePairs.add(new BasicNameValuePair("id", id));
             nameValuePairs.add(new BasicNameValuePair("dir", dir));
             nameValuePairs.add(new BasicNameValuePair("uh", modhash));
@@ -63,7 +63,7 @@ public class PerformVote extends AsyncTask<String, Integer, Void> {
             // Using HttpContext, CookieStore, and friends didn't work
             httpPost.setHeader("Cookie", String.format("reddit_session=\"%s\"", cookie));
             httpPost.setHeader("User-Agent", RedditApi.USER_AGENT);
-            if (MusicService.DEBUG) { 
+            if (MusicService.DEBUG) {
                 // Do some extra work when debugging to print the response
                 final ResponseHandler<String> responseHandler = new BasicResponseHandler();
                 final String response = httpClient.execute(httpPost, responseHandler);
@@ -82,10 +82,10 @@ public class PerformVote extends AsyncTask<String, Integer, Void> {
         } catch (ParseException e) {
             Log.i(RedditApi.TAG, "ParseException while performing vote", e);
         }
-        
+
         return null;
     }
-    
+
     @Override
     protected void onPostExecute(Void unused) {
         // This method intentionally does nothing

@@ -31,14 +31,14 @@ import android.widget.RemoteViews;
 public abstract class WidgetBase extends AppWidgetProvider {
     private static final String TAG = "BaseWidget";
     protected static final boolean DEBUG = false;
-    
+
     protected abstract RemoteViews generateViews(Context context);
     protected abstract void updateSongInfo(Context context, AllSongInfo song, RemoteViews views);
     protected abstract void updateStreamName(Context context, String station, RemoteViews views);
     protected abstract void updatePlaystate(Context context, boolean isPlaying, RemoteViews views);
     protected abstract void bindButtons(Context context, RemoteViews views);
     protected abstract ComponentName getComponentName();
-    
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // Send a loopback broadcast to the service asking for the most current data
@@ -47,13 +47,13 @@ public abstract class WidgetBase extends AppWidgetProvider {
         bundle.putIntArray(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
         context.sendOrderedBroadcast(updateIntent, null, this, null, Activity.RESULT_FIRST_USER, null, bundle);
     }
-    
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (DEBUG) {
             Log.d(TAG, "++Intent Received++");
         }
-        
+
         final String action = intent.getAction();
         if (action.equals(MusicService.ACTION_REQUEST_UPDATE)) {
             // Request update is the result of a sendOrderedBroadcast loopback
@@ -79,16 +79,16 @@ public abstract class WidgetBase extends AppWidgetProvider {
                 update(context, bundle);
             }
         }
-        
+
         super.onReceive(context, intent);
     }
-    
+
     private void update(Context context, Bundle bundle) {
         final int[] appWidgetIds = bundle.getIntArray(AppWidgetManager.EXTRA_APPWIDGET_IDS);
         final AllSongInfo songinfo = bundle.getParcelable(MusicService.KEY_SONG_INFO);
         final String streamName = bundle.getString(MusicService.KEY_STREAM_NAME);
         final boolean isPlaying = bundle.getBoolean(MusicService.KEY_IS_PLAYING);
-        
+
         // Get the remoteviews associated with widget's specific layout
         RemoteViews views = generateViews(context);
         // Push the updated song info to the remoteviews then get
@@ -110,4 +110,3 @@ public abstract class WidgetBase extends AppWidgetProvider {
         }
     }
 }
-

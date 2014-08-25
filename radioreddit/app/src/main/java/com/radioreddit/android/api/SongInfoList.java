@@ -21,5 +21,5 @@ package com.radioreddit.android.api;
 import java.util.List;
 
 public class SongInfoList {
-	public List<SongInfo> song;
+    public List<SongInfo> song;
 }

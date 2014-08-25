@@ -22,13 +22,13 @@ public class Stream {
     public String name;
     public String status;
     public Relay[] relays;
-    
+
     public Stream(String name, String status, Relay[] relays) {
         this.name = name;
         this.status = status;
         this.relays = relays;
     }
-    
+
     @Override
     public String toString() {
         return name;
