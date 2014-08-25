@@ -18,10 +18,11 @@
 
 package com.radioreddit.android.api;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import android.net.ParseException;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.radioreddit.android.MusicService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -36,37 +37,36 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.net.ParseException;
-import android.os.AsyncTask;
-import android.util.Log;
-
-import com.radioreddit.android.MusicService;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PerformLogin extends AsyncTask<String, Integer, Boolean> {
     private String mUser;
     private String mModhash;
     private String mCookie;
     private LoginResultCallback mCallback;
-    
+
     public PerformLogin(LoginResultCallback callback) {
         mCallback = callback;
     }
-    
+
     @Override
     protected Boolean doInBackground(String... params) {
         final String username = params[0];
         final String password = params[1];
-        
+
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             return false;
         }
-        
+
         // Prepare POST, execute it, parse response as JSON
-        JSONObject response = null;
+        JSONObject response;
         try {
             final HttpClient httpClient = new DefaultHttpClient();
             final HttpPost httpPost = new HttpPost("https://ssl.reddit.com/api/login");
-            final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            final List<NameValuePair> nameValuePairs = new ArrayList<>();
             nameValuePairs.add(new BasicNameValuePair("user", username));
             nameValuePairs.add(new BasicNameValuePair("passwd", password));
             nameValuePairs.add(new BasicNameValuePair("api_type", "json"));
@@ -95,27 +95,27 @@ public class PerformLogin extends AsyncTask<String, Integer, Boolean> {
             Log.i(RedditApi.TAG, "JSONException while performing login", e);
             return false;
         }
-        
-        // Check for failure 
+
+        // Check for failure
         if (response == null) {
             Log.i(RedditApi.TAG, "Response was null while performing login");
             return false;
         }
-        
+
         // Check for errors
         final JSONArray errors = response.optJSONArray("errors");
         if (errors == null || errors.length() > 0) {
             Log.i(RedditApi.TAG, "Response has errors while performing login");
             return false;
         }
-        
+
         // Check for data
         final JSONObject data = response.optJSONObject("data");
         if (data == null) {
             Log.i(RedditApi.TAG, "Response missing data while performing login");
             return false;
         }
-        
+
         // Get modhash and cookie from data
         mUser = username;
         mModhash = data.optString("modhash");
@@ -124,10 +124,10 @@ public class PerformLogin extends AsyncTask<String, Integer, Boolean> {
             Log.i(RedditApi.TAG, "Response missing modhash/cookie while performing login");
             return false;
         }
-        
+
         return true;
     }
-    
+
     @Override
     protected void onPostExecute(Boolean success) {
         if (success) {
@@ -137,4 +137,3 @@ public class PerformLogin extends AsyncTask<String, Integer, Boolean> {
         }
     }
 }
-

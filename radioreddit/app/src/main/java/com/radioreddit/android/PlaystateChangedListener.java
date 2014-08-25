@@ -21,4 +21,3 @@ package com.radioreddit.android;
 public interface PlaystateChangedListener {
     public void onPlaystateChanged(boolean isPlaying);
 }
-

@@ -20,7 +20,7 @@ package com.radioreddit.android.api;
 
 public class Relay {
     public String server;
-    
+
     public Relay(String server) {
         this.server = server;
     }
