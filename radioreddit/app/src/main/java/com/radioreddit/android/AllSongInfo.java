@@ -22,14 +22,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class AllSongInfo implements Parcelable {
-    // Set by GetSongInfo
+    // Set by GetSongInfo.
     public String reddit_id;
     public boolean upvoted;
     public boolean downvoted;
     public int votes;
     public boolean saved;
 
-    // Set by GetStationStatus
+    // Set by GetStationStatus.
     public String title;
     public String artist;
     public String redditor;
@@ -37,11 +37,11 @@ public class AllSongInfo implements Parcelable {
     public String playlist;
     public String reddit_url;
 
-    // Empty constructor needed to implement Parcelable
+    // Empty constructor needed to implement Parcelable.
     public AllSongInfo() {
     }
 
-    // Populates new object from parcel
+    // Populates new object from parcel.
     private AllSongInfo(Parcel source) {
         reddit_id = source.readString();
         upvoted = (source.readByte() == (byte) 1);
@@ -56,8 +56,9 @@ public class AllSongInfo implements Parcelable {
         reddit_url = source.readString();
     }
 
-    // CREATOR is a reserved object from Parcelable that inflates the object from a parcel source
-    public static final Parcelable.Creator<AllSongInfo> CREATOR = new Parcelable.Creator<AllSongInfo>() {
+    // CREATOR is a reserved object from Parcelable that inflates the object from a parcel source.
+    public static final Parcelable.Creator<AllSongInfo> CREATOR =
+            new Parcelable.Creator<AllSongInfo>() {
         @Override
         public AllSongInfo createFromParcel(Parcel source) {
             return new AllSongInfo(source);
@@ -75,27 +76,15 @@ public class AllSongInfo implements Parcelable {
         return 0;
     }
 
-    // Collapse object to parcel for transit
+    // Collapse object to parcel for transit.
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(reddit_id);
-        // Parcel doesn't have a writeBoolean so we use a byte instead
-        if (upvoted) {
-            dest.writeByte((byte) 1);
-        } else {
-            dest.writeByte((byte) 0);
-        }
-        if (downvoted) {
-            dest.writeByte((byte) 1);
-        } else {
-            dest.writeByte((byte) 0);
-        }
+        // Parcel doesn't have a writeBoolean so we use a byte instead.
+        dest.writeByte((byte) (upvoted ? 1 : 0));
+        dest.writeByte((byte) (downvoted ? 1 : 0));
         dest.writeInt(votes);
-        if (saved) {
-            dest.writeByte((byte) 1);
-        } else {
-            dest.writeByte((byte) 0);
-        }
+        dest.writeByte((byte) (saved ? 1 : 0));
         dest.writeString(title);
         dest.writeString(artist);
         dest.writeString(redditor);

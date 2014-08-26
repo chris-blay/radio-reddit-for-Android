@@ -43,7 +43,7 @@ public class PerformSave extends AsyncTask<String, Integer, Void> {
         final String id = params[2];
         final String type = params[3];
 
-        // Prepare POST with cookie and execute it
+        // Prepare POST with cookie and execute it.
         try {
             final HttpClient httpClient = new DefaultHttpClient();
             final HttpPost httpPost = new HttpPost("http://www.reddit.com/api/" + type);
@@ -51,11 +51,11 @@ public class PerformSave extends AsyncTask<String, Integer, Void> {
             nameValuePairs.add(new BasicNameValuePair("id", id));
             nameValuePairs.add(new BasicNameValuePair("uh", modhash));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            // Using HttpContext, CookieStore, and friends didn't work
+            // Using HttpContext, CookieStore, and friends didn't work.
             httpPost.setHeader("Cookie", "reddit_session=" + cookie);
             httpPost.setHeader("User-Agent", RedditApi.USER_AGENT);
             httpClient.execute(httpPost);
-            // We just assume that everything worked so there's no need to check the response
+            // We just assume that everything worked so there's no need to check the response.
         } catch (UnsupportedEncodingException e) {
             Log.i(RedditApi.TAG, "UnsupportedEncodingException while performing vote", e);
         } catch (ClientProtocolException e) {
@@ -71,6 +71,6 @@ public class PerformSave extends AsyncTask<String, Integer, Void> {
 
     @Override
     protected void onPostExecute(Void unused) {
-        // This method intentionally does nothing
+        // This method intentionally does nothing.
     }
 }

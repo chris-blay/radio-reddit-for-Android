@@ -32,7 +32,8 @@ public class RedditApi {
     private static final String SAVE = "save";
     private static final String UNSAVE = "unsave";
 
-    public static void requestLogin(LoginResultCallback callback, String username, String password) {
+    public static void requestLogin(
+            LoginResultCallback callback, String username, String password) {
         new PerformLogin(callback).execute(username, password);
     }
 
