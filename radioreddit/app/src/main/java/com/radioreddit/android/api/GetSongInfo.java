@@ -54,17 +54,18 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
 
     @Override
     protected Boolean doInBackground(String... params) {
-        final String cookie = params[0]; // This will be null if not logged in
+        final String cookie = params[0]; // This will be null if not logged in.
 
-        // Prepare GET with cookie, execute it, parse response as JSON
+        // Prepare GET with cookie, execute it, parse response as JSON.
         JSONObject response = null;
         try {
             final HttpClient httpClient = new DefaultHttpClient();
             final List<NameValuePair> nameValuePairs = new ArrayList<>();
             nameValuePairs.add(new BasicNameValuePair("url", mSong.reddit_url));
-            final HttpGet httpGet = new HttpGet("http://www.reddit.com/api/info.json?" + URLEncodedUtils.format(nameValuePairs, "utf-8"));
+            final HttpGet httpGet = new HttpGet("http://www.reddit.com/api/info.json?"
+                    + URLEncodedUtils.format(nameValuePairs, "utf-8"));
             if (cookie != null) {
-                // Using HttpContext, CookieStore, and friends didn't work
+                // Using HttpContext, CookieStore, and friends didn't work.
                 httpGet.setHeader("Cookie", "reddit_session=" + cookie);
             }
             httpGet.setHeader("User-Agent", RedditApi.USER_AGENT);
@@ -82,13 +83,13 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
             Log.i(RedditApi.TAG, "JSONException while getting song info", e);
         }
 
-        // Check for failure
+        // Check for failure.
         if (response == null) {
             Log.i(RedditApi.TAG, "Response is null");
             return false;
         }
 
-        // Get the info we want
+        // Get the info we want.
         final JSONObject data1 = response.optJSONObject("data");
         if (data1 == null) {
             Log.i(RedditApi.TAG, "First data is null");
@@ -106,7 +107,7 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
         final JSONObject child = children.optJSONObject(0);
         if (child == null) {
             // This is common if the song hasn't been submitted to reddit yet
-            // so we intentionally don't log this case
+            //  so we intentionally don't log this case.
             return false;
         }
         final String kind = child.optString("kind");
@@ -131,7 +132,7 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
         }
         final boolean saved = data2.optBoolean("saved");
 
-        // Modify song with collected info
+        // Modify song with collected info.
         mSong.reddit_id = kind + "_" + id;
         mSong.upvoted = (likes != null && likes);
         mSong.downvoted = (likes != null && !likes);
@@ -144,7 +145,7 @@ public class GetSongInfo extends AsyncTask<String, Integer, Boolean> {
     @Override
     protected void onPostExecute(Boolean success) {
         if (!success) {
-            // Set default values for stuff we couldn't get
+            // Set default values for stuff we couldn't get.
             mSong.reddit_id = null;
             mSong.upvoted = false;
             mSong.downvoted = false;

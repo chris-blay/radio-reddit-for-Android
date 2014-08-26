@@ -59,7 +59,8 @@ public class LoginActivity extends ActionBarActivity implements LoginResultCallb
         mUsername = (EditText) findViewById(R.id.username);
         mPassword = (EditText) findViewById(R.id.password);
 
-        bindService(new Intent(mContext, MusicService.class), mConnection, Context.BIND_AUTO_CREATE);
+        bindService(
+                new Intent(mContext, MusicService.class), mConnection, Context.BIND_AUTO_CREATE);
 
         findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +84,7 @@ public class LoginActivity extends ActionBarActivity implements LoginResultCallb
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Finish this activity
+                // Finish this activity.
                 finish();
                 break;
         }
@@ -91,16 +92,16 @@ public class LoginActivity extends ActionBarActivity implements LoginResultCallb
     }
 
     private void login() {
-        // Get username/password
+        // Get username/password.
         final String username = mUsername.getText().toString();
         final String password = mPassword.getText().toString();
 
-        // Check username/password
-        if (username.length() == 0) {
+        // Check username/password.
+        if (username.isEmpty()) {
             toast(R.string.no_username);
             return;
         }
-        if (password.length() == 0) {
+        if (password.isEmpty()) {
             toast(R.string.no_password);
             return;
         }
