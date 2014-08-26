@@ -57,11 +57,11 @@ public class PerformLogin extends AsyncTask<String, Integer, Boolean> {
         final String username = params[0];
         final String password = params[1];
 
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             return false;
         }
 
-        // Prepare POST, execute it, parse response as JSON
+        // Prepare POST, execute it, parse response as JSON.
         JSONObject response;
         try {
             final HttpClient httpClient = new DefaultHttpClient();
@@ -96,27 +96,27 @@ public class PerformLogin extends AsyncTask<String, Integer, Boolean> {
             return false;
         }
 
-        // Check for failure
+        // Check for failure.
         if (response == null) {
             Log.i(RedditApi.TAG, "Response was null while performing login");
             return false;
         }
 
-        // Check for errors
+        // Check for errors.
         final JSONArray errors = response.optJSONArray("errors");
         if (errors == null || errors.length() > 0) {
             Log.i(RedditApi.TAG, "Response has errors while performing login");
             return false;
         }
 
-        // Check for data
+        // Check for data.
         final JSONObject data = response.optJSONObject("data");
         if (data == null) {
             Log.i(RedditApi.TAG, "Response missing data while performing login");
             return false;
         }
 
-        // Get modhash and cookie from data
+        // Get modhash and cookie from data.
         mUser = username;
         mModhash = data.optString("modhash");
         mCookie = data.optString("cookie");

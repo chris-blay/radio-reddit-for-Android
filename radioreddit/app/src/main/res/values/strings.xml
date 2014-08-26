@@ -50,7 +50,7 @@
     <string name="info_playlist">playlist</string>
 
     <string name="info_text"><![CDATA[
-        version 0.5<br><br>
+        version %s<br><br>
         <a href="http://radioreddit.com/?q=sponsor">please donate to radio reddit!</a><br><br>
         brought to you by
             <a href="mailto:chris.b.blay@gmail.com">christopher blay</a>,

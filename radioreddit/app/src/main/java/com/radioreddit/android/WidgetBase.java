@@ -41,11 +41,12 @@ public abstract class WidgetBase extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        // Send a loopback broadcast to the service asking for the most current data
+        // Send a loopback broadcast to the service asking for the most current data.
         final Intent updateIntent = new Intent(MusicService.ACTION_REQUEST_UPDATE);
         final Bundle bundle = this.getResultExtras(true);
         bundle.putIntArray(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-        context.sendOrderedBroadcast(updateIntent, null, this, null, Activity.RESULT_FIRST_USER, null, bundle);
+        context.sendOrderedBroadcast(
+                updateIntent, null, this, null, Activity.RESULT_FIRST_USER, null, bundle);
     }
 
     @Override
@@ -58,7 +59,7 @@ public abstract class WidgetBase extends AppWidgetProvider {
         if (action.equals(MusicService.ACTION_REQUEST_UPDATE)) {
             // Request update is the result of a sendOrderedBroadcast loopback
             //  from within the initial onUpdate call, usually called when a
-            //  widget is first added and it needs to get the most current data
+            //  widget is first added and it needs to get the most current data.
             if (this.getResultCode() == Activity.RESULT_OK) {
                 final Bundle bundle = this.getResultExtras(false);
                 if (bundle != null) {
@@ -70,10 +71,10 @@ public abstract class WidgetBase extends AppWidgetProvider {
             // Called whenever new content or state info needs to be passed to the widget.
             // Authors Note: Versions of Android pre-11 have a new instance of remoteviews
             //  being used to update the widget views each time there's a change. Because of this,
-            //  this section is overloaded. If using a minsdk of 11+ the partiallyUpdateWidget method
-            //  ought to be used with intents for each item; songinfo, streamName, and
+            //  this section is overloaded. If using a minsdk of 11+ the partiallyUpdateWidget
+            //  method ought to be used with intents for each item; songinfo, streamName, and
             //  playstate (though in truth the playstatelistener ought to be used instead, but
-            //  that's a whole other ball game)
+            //  that's a whole other ball game).
             final Bundle bundle = intent.getExtras();
             if (bundle != null) {
                 update(context, bundle);
@@ -89,19 +90,19 @@ public abstract class WidgetBase extends AppWidgetProvider {
         final String streamName = bundle.getString(MusicService.KEY_STREAM_NAME);
         final boolean isPlaying = bundle.getBoolean(MusicService.KEY_IS_PLAYING);
 
-        // Get the remoteviews associated with widget's specific layout
+        // Get the remoteviews associated with widget's specific layout.
         RemoteViews views = generateViews(context);
         // Push the updated song info to the remoteviews then get
-        //  the views back for further updating
+        //  the views back for further updating.
         updateSongInfo(context, songinfo, views);
-        // Push the updated stream name
+        // Push the updated stream name.
         updateStreamName(context, streamName, views);
-        // Push the updated playstate
+        // Push the updated playstate.
         updatePlaystate(context, isPlaying, views);
-        // Push the updated playstate
+        // Push the updated playstate.
         bindButtons(context, views);
         // Update the widgets themselves, either using the ids for a small selection
-        //  or the componentname for every instance of said widget
+        //  or the componentname for every instance of said widget.
         final AppWidgetManager awm = AppWidgetManager.getInstance(context);
         if (appWidgetIds != null) {
             awm.updateAppWidget(appWidgetIds, views);

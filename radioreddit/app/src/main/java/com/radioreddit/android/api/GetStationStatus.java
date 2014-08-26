@@ -44,13 +44,13 @@ public class GetStationStatus extends AsyncTask<String, Integer, StationStatus> 
         InputStream source = InternetCommunication.retrieveStream(params[0]);
 
         if (source == null) {
-            // No Internet connection
+            // No Internet connection.
             return null;
         }
 
         Reader reader = new InputStreamReader(source);
         Gson gson = new Gson();
-        // Wrap in try/catch in case there is a parse error
+        // Wrap in try/catch in case there is a parse error.
         try {
             return gson.fromJson(reader, StationStatus.class);
         } catch (JsonSyntaxException e) {
@@ -80,7 +80,7 @@ public class GetStationStatus extends AsyncTask<String, Integer, StationStatus> 
             currentSong = result.songs.song.get(0);
         }
 
-        // Copy the info we want to display to a new object
+        // Copy the info we want to display to a new object.
         final AllSongInfo song = new AllSongInfo();
         song.title = currentSong.title;
         song.artist = currentSong.artist;
@@ -90,8 +90,8 @@ public class GetStationStatus extends AsyncTask<String, Integer, StationStatus> 
         song.reddit_url = currentSong.reddit_url;
 
         // Not all the information we need is available yet. We need to make
-        // a request to reddit to get vote/save info for this song before
-        // sending back to the main activity
+        //  a request to reddit to get vote/save info for this song before
+        //  sending back to the main activity.
         new GetSongInfo(mService, song).execute(mCookie);
     }
 }
