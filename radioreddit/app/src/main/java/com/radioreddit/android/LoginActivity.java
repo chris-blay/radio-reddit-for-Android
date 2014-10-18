@@ -24,14 +24,15 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.radioreddit.android.actionbarcompat.ActionBarActivity;
 import com.radioreddit.android.api.LoginResultCallback;
 import com.radioreddit.android.api.RedditApi;
+import com.radioreddit.android.R;
 
 public class LoginActivity extends ActionBarActivity implements LoginResultCallback {
     private Context mContext;
@@ -69,7 +70,7 @@ public class LoginActivity extends ActionBarActivity implements LoginResultCallb
             }
         });
 
-        setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
