@@ -20,8 +20,6 @@
 
     <style name="AppTheme" parent="style/Theme.AppCompat.Light">
         <item name="android:actionBarStyle">@style/ActionBar</item>
-        <item name="android:windowContentOverlay">@drawable/actionbar_shadow</item>
-
         <item name="actionBarStyle">@style/ActionBar</item>
     </style>
 

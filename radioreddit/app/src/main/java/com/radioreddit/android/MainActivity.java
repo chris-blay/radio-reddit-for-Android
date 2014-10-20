@@ -45,7 +45,7 @@ import android.widget.TextView;
 import java.util.Locale;
 
 public class MainActivity extends ActionBarActivity implements PlaystateChangedListener {
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = "MainActivity";
 
     private static final boolean DEBUG = false;
 
