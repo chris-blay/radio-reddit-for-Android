@@ -72,10 +72,10 @@
     <string name="not_logged_in">not logged in</string>
     <string name="now_logged_in_as">now logged in as</string>
 
-    <string name="play">toggle play</string>
-    <string name="save">toggle save</string>
-    <string name="upvote">toggle upvote</string>
-    <string name="downvote">toggle downvote</string>
+    <string name="play">Play</string>
+    <string name="save">Save</string>
+    <string name="upvote">Upvote</string>
+    <string name="downvote">Downvote</string>
     <string name="album_art">album art</string>
     <string name="info">info</string>
     <string name="widget_name_large">Radio Reddit (Large)</string>
