@@ -53,7 +53,7 @@
                 android:paddingRight="5dip"
                 android:layout_weight="1"
                 android:src="@drawable/up_off"
-                android:background="@drawable/actionbar_compat_item"
+                android:background="@android:color/transparent"
                 android:scaleType="center"
                 android:contentDescription="@string/upvote" />
 
@@ -77,7 +77,7 @@
                 android:paddingRight="5dip"
                 android:layout_weight="1"
                 android:src="@drawable/down_off"
-                android:background="@drawable/actionbar_compat_item"
+                android:background="@android:color/transparent"
                 android:scaleType="center"
                 android:contentDescription="@string/downvote" />
 
@@ -191,7 +191,7 @@
             android:layout_height="@dimen/actionbar_compat_height"
             android:layout_weight="1"
             android:src="@drawable/star_off"
-            android:background="@drawable/actionbar_compat_item"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/save" />
 
         <ImageButton
@@ -200,7 +200,7 @@
             android:layout_height="@dimen/actionbar_compat_height"
             android:layout_weight="2"
             android:src="@drawable/play"
-            android:background="@drawable/actionbar_compat_item"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/play" />
 
         <ImageButton
@@ -209,7 +209,7 @@
             android:layout_height="@dimen/actionbar_compat_height"
             android:layout_weight="1"
             android:src="@drawable/info"
-            android:background="@drawable/actionbar_compat_item"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/info" />
 
     </LinearLayout>

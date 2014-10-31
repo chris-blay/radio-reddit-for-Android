@@ -24,12 +24,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.radioreddit.android.actionbarcompat.ActionBarActivity;
 import com.radioreddit.android.api.LoginResultCallback;
 import com.radioreddit.android.api.RedditApi;
 
@@ -69,7 +70,7 @@ public class LoginActivity extends ActionBarActivity implements LoginResultCallb
             }
         });
 
-        setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -97,11 +98,11 @@ public class LoginActivity extends ActionBarActivity implements LoginResultCallb
         final String password = mPassword.getText().toString();
 
         // Check username/password.
-        if (username.isEmpty()) {
+        if (TextUtils.isEmpty(username)) {
             toast(R.string.no_username);
             return;
         }
-        if (password.isEmpty()) {
+        if (TextUtils.isEmpty(password)) {
             toast(R.string.no_password);
             return;
         }

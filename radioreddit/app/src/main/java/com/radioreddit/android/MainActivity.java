@@ -29,9 +29,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -42,20 +42,16 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.radioreddit.android.actionbarcompat.ActionBarActivity;
-
 import java.util.Locale;
 
 public class MainActivity extends ActionBarActivity implements PlaystateChangedListener {
-    private static final String TAG = "MainActivty";
+    private static final String TAG = "MainActivity";
+
     private static final boolean DEBUG = false;
 
     // Used for displaying dialogs.
     private static final int DIALOG_TUNE = 1;
     private static final int DIALOG_INFO = 2;
-
-    private Context mContext;
-    private Resources mResources;
 
     private TextView mNoInternet;
     private ImageButton mUpvote;
@@ -137,16 +133,13 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
         if (DEBUG) {
             Log.d(TAG, "++onCreate++");
         }
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-
         // Initialize member variables.
-        mContext = getApplicationContext();
-        mResources = getResources();
         mNoInternet = (TextView) findViewById(R.id.no_internet);
         mUpvote = (ImageButton) findViewById(R.id.upvote);
         mVotes = (TextView) findViewById(R.id.votes);
@@ -194,16 +187,16 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
 
         // Start the music playing service this allows the service
         //  to continue after the application has lost focus.
-        startService(new Intent(mContext, MusicService.class));
+        startService(new Intent(this, MusicService.class));
     }
 
     @Override
     protected void onStart() {
+        super.onStart();
         if (DEBUG) {
             Log.d(TAG, "++onStart++");
         }
-        super.onStart();
-        bindService(new Intent(mContext, MusicService.class), mConnection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, MusicService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -220,25 +213,25 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
 
         // Send a loopback call to the service for the most up to date data.
         final Intent intent = new Intent(MusicService.ACTION_REQUEST_UPDATE);
-        mContext.sendOrderedBroadcast(
+        sendOrderedBroadcast(
                 intent, null, mBackendReceiver, null, Activity.RESULT_FIRST_USER, null, null);
     }
 
     @Override
     public void onPause() {
+        super.onPause();
         if (DEBUG) {
             Log.d(TAG, "++onPause++");
         }
-        super.onPause();
         unregisterReceiver(mBackendReceiver);
     }
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         if (DEBUG) {
             Log.d(TAG, "++OnDestroy++");
         }
-        super.onDestroy();
 
         // Disconnect from the music playing service if it is connected.
         if (mService != null) {
@@ -346,15 +339,15 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
         if (songinfo.upvoted) {
             mUpvote.setImageResource(R.drawable.up_on);
             mDownvote.setImageResource(R.drawable.down_off);
-            mVotes.setTextColor(mResources.getColor(R.color.upvote_orange));
+            mVotes.setTextColor(getResources().getColor(R.color.upvote_orange));
         } else if (songinfo.downvoted) {
             mUpvote.setImageResource(R.drawable.up_off);
             mDownvote.setImageResource(R.drawable.down_on);
-            mVotes.setTextColor(mResources.getColor(R.color.downvote_blue));
+            mVotes.setTextColor(getResources().getColor(R.color.downvote_blue));
         } else {
             mUpvote.setImageResource(R.drawable.up_off);
             mDownvote.setImageResource(R.drawable.down_off);
-            mVotes.setTextColor(mResources.getColor(R.color.novote_grey));
+            mVotes.setTextColor(getResources().getColor(R.color.novote_grey));
         }
         if (songinfo.saved) {
             mSave.setImageResource(R.drawable.star_on);
@@ -412,7 +405,7 @@ public class MainActivity extends ActionBarActivity implements PlaystateChangedL
     }
 
     private void login() {
-        startActivity(new Intent(mContext, LoginActivity.class));
+        startActivity(new Intent(this, LoginActivity.class));
     }
 
     private void logout() {
